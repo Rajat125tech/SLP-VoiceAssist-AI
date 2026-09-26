@@ -1,0 +1,36 @@
+# Python
+venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.npm
+*.log
+
+# Environment variables & Local Settings
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ensure trained model files are tracked in git
+!backend/model/
+!backend/model/intent_model.keras
+!backend/model/label_encoder.pickle
+!backend/model/tokenizer.pickle
+!backend/model/model_metadata.json

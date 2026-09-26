@@ -1,0 +1,542 @@
+{
+  "intents": [
+    {
+      "intent": "greeting",
+      "patterns": [
+        "Hello",
+        "Hi there",
+        "Good morning",
+        "Hey",
+        "How are you",
+        "Greetings",
+        "Hello assistant",
+        "Hey there VoiceAssist",
+        "Good afternoon",
+        "Good evening",
+        "Hi VoiceAssist",
+        "How are things going",
+        "Hello friend",
+        "Hey bot",
+        "What's up",
+        "Good day to you",
+        "Hi, are you active",
+        "Hey, can we talk",
+        "Hello there, hope you are doing well",
+        "Greetings voice assistant",
+        "Hi there, ready to help?",
+        "Hey! How is your day?"
+      ],
+      "responses": [
+        "Hello! I am VoiceAssist AI, your voice-enabled academic chatbot. How can I assist you today?",
+        "Hi there! Welcome to VoiceAssist AI. What topic would you like to explore?",
+        "Greetings! I'm here and ready to help you with deep learning, NLP, speech recognition, and college queries.",
+        "Good day! How can I support your speech and language processing studies today?"
+      ]
+    },
+    {
+      "intent": "goodbye",
+      "patterns": [
+        "Bye",
+        "Goodbye",
+        "See you later",
+        "Catch you later",
+        "Farewell",
+        "Talk to you soon",
+        "Have a great day",
+        "Bye for now",
+        "Exiting now",
+        "Good night",
+        "See you tomorrow",
+        "Signing off",
+        "I have to go now",
+        "Thanks and bye",
+        "End conversation",
+        "I'm leaving now",
+        "Until next time",
+        "Take care and goodbye",
+        "Catch you later assistant",
+        "Bye bye VoiceAssist"
+      ],
+      "responses": [
+        "Goodbye! Best of luck with your studies and projects. Feel free to return anytime!",
+        "Farewell! Keep practicing your speech and language processing skills.",
+        "Take care! Have a productive day ahead and feel free to talk again whenever you need help.",
+        "See you soon! Remember to keep experimenting with neural networks and deep learning models!"
+      ]
+    },
+    {
+      "intent": "thanks",
+      "patterns": [
+        "Thank you",
+        "Thanks a lot",
+        "Much appreciated",
+        "Thanks for your help",
+        "I appreciate it",
+        "Thank you so much",
+        "That was very helpful",
+        "Many thanks",
+        "Grateful for your assistance",
+        "Thanks voice bot",
+        "Thank you for clarifying",
+        "Awesome, thanks a ton",
+        "You saved my time, thank you",
+        "Great answer, thanks",
+        "Much obliged",
+        "I really appreciate your guidance",
+        "Thank you kindly",
+        "That solved my question, thanks",
+        "Thanks for explaining that clearly"
+      ],
+      "responses": [
+        "You're very welcome! I'm glad I could provide clear insights.",
+        "Happy to help! Let me know if you have any other questions regarding speech or deep learning.",
+        "Anytime! Assisting you with your academic questions is my top priority.",
+        "My pleasure! Feel free to ask more questions whenever you are ready."
+      ]
+    },
+    {
+      "intent": "introduction",
+      "patterns": [
+        "Who are you",
+        "What is your name",
+        "Tell me about yourself",
+        "Introduce yourself",
+        "Who created you",
+        "What are you",
+        "Can you introduce yourself",
+        "What is VoiceAssist AI",
+        "What is your identity",
+        "Give me a brief intro",
+        "What kind of bot are you",
+        "Explain who you are",
+        "Are you an AI",
+        "What system is this",
+        "Tell me who built this chatbot",
+        "Give me an introduction to VoiceAssist AI",
+        "Are you a speech processing assistant",
+        "Who am I speaking to right now"
+      ],
+      "responses": [
+        "I am VoiceAssist AI, a voice-enabled conversational agent developed for Speech and Language Processing assessments using Bidirectional LSTMs and the Web Speech API.",
+        "My name is VoiceAssist AI! I am an end-to-end deep learning chatbot trained on specialized intents to help students with NLP, machine learning, and academic queries.",
+        "I am an academic voice chatbot powered by a TensorFlow Bidirectional LSTM neural network. I combine browser speech recognition with deep learning intent classification."
+      ]
+    },
+    {
+      "intent": "help",
+      "patterns": [
+        "Help me",
+        "I need assistance",
+        "Can you assist me",
+        "What can you do for me",
+        "How do I use this",
+        "Guide me through this",
+        "Support needed",
+        "I am confused",
+        "How does this voice assistant work",
+        "Can you help me out",
+        "I need guidance with this application",
+        "How do I interact with you",
+        "Where do I begin",
+        "Give me some assistance",
+        "Help with features",
+        "Show me how to operate the chatbot",
+        "I need help navigating this project",
+        "Can someone help me"
+      ],
+      "responses": [
+        "You can interact with me by clicking the microphone button and speaking, or by typing your question into the input box. I can answer questions on Deep Learning, NLP, Speech Recognition, and college topics.",
+        "I am here to assist you! Try asking: 'What is deep learning?', 'How does speech recognition work?', or 'Give me exam tips'. You can use speech or text!",
+        "Need help? Simply press the microphone icon to activate voice input, say your question aloud, and watch my neural network classify your intent in real time."
+      ]
+    },
+    {
+      "intent": "capabilities",
+      "patterns": [
+        "What are your capabilities",
+        "What can you do",
+        "What features do you have",
+        "Show me your abilities",
+        "Tell me your skills",
+        "What topics can you discuss",
+        "What tasks can you handle",
+        "List your functionalities",
+        "What are your powers",
+        "What can this chatbot perform",
+        "Tell me what you are trained on",
+        "What are the features of VoiceAssist AI",
+        "Can you describe your functions",
+        "What domains can you answer questions about",
+        "What is this model capable of doing",
+        "Explain your system features",
+        "Show me what you can do"
+      ],
+      "responses": [
+        "My capabilities include: (1) Real-time Speech-to-Text via Web Speech API, (2) Intent classification with a Bidirectional LSTM neural network, (3) Confidence scoring, (4) Text-to-Speech synthesis, and (5) Academic knowledge on ML, DL, NLP, and college life.",
+        "I can understand spoken queries, extract semantic intents using deep learning, output responses with confidence metrics, and read responses back using speech synthesis.",
+        "I am capable of analyzing 20 distinct intents covering engineering concepts, career guidance, and SLP concepts with real-time confidence scores and neural embeddings."
+      ]
+    },
+    {
+      "intent": "study_help",
+      "patterns": [
+        "How should I study for exams",
+        "Give me study tips",
+        "How to focus on studies",
+        "How can I prepare for technical subjects",
+        "What is the best study strategy",
+        "Help me manage my study time",
+        "Tips for revision",
+        "How to understand difficult concepts",
+        "How do I retain complex algorithms",
+        "Best practices for learning engineering subjects",
+        "How can I study more efficiently",
+        "Give me advice on studying",
+        "How to memorize formulas and concepts",
+        "How do I study machine learning effectively",
+        "Provide techniques for active recall and spaced repetition",
+        "I struggle with staying focused while studying",
+        "How do top students study"
+      ],
+      "responses": [
+        "Effective study strategies include: 1) Active recall and Feynman technique, 2) Spaced repetition for retention, 3) 25-minute Pomodoro study intervals, and 4) Building hands-on coding projects to reinforce theory.",
+        "For technical subjects like SLP and Deep Learning, focus on understanding math intuitions first (vectors, matrices, gradients), then implement simple code from scratch before using high-level frameworks.",
+        "To maximize retention: Teach the concepts to a classmate, sketch architecture diagrams, and work through past exam numericals regularly."
+      ]
+    },
+    {
+      "intent": "programming",
+      "patterns": [
+        "What is programming",
+        "How do I learn coding",
+        "Which programming language should I learn first",
+        "Explain object oriented programming",
+        "Best practices for writing clean code",
+        "How to debug code effectively",
+        "Tips for learning Python",
+        "What is data structure and algorithms",
+        "Why is Python popular for AI",
+        "Explain time and space complexity",
+        "How to get better at software development",
+        "What are design patterns in programming",
+        "How do I start competitive programming",
+        "Explain recursion and dynamic programming",
+        "How should I organize my software codebase",
+        "Tips for writing modular and readable code",
+        "What are git and version control",
+        "How do I learn coding and what is data structures?",
+        "Explain programming and software development fundamentals"
+      ],
+      "responses": [
+        "Programming is the craft of designing executable instructions for computers. For AI and data science, Python is standard due to rich libraries like NumPy, TensorFlow, PyTorch, and Scikit-Learn.",
+        "To excel in programming: master core Data Structures (arrays, trees, graphs), write clean modular functions, use Git version control, and debug systematically with logging and breakpoints.",
+        "When learning to code: build real-world mini-projects rather than just following tutorials. Focus on understanding algorithm complexity (Big-O notation) and clean code principles."
+      ]
+    },
+    {
+      "intent": "machine_learning",
+      "patterns": [
+        "What is machine learning",
+        "Explain supervised vs unsupervised learning",
+        "How does machine learning work",
+        "What are common ML algorithms",
+        "Explain feature engineering",
+        "Difference between AI and machine learning",
+        "What is cross validation",
+        "How to evaluate ML models",
+        "What is overfitting and underfitting",
+        "Explain the bias variance tradeoff",
+        "What is reinforcement learning",
+        "How does a random forest classifier work",
+        "What is support vector machine",
+        "Explain precision recall and F1 score",
+        "How do loss functions guide training in machine learning",
+        "What is gradient boosting",
+        "Explain hyperparameter tuning in machine learning"
+      ],
+      "responses": [
+        "Machine Learning is a branch of AI where systems learn statistical patterns from data rather than following rigid rule-based programming. Paradigms include Supervised, Unsupervised, and Reinforcement Learning.",
+        "Key ML concepts: Overfitting occurs when a model memorizes training noise; regularization, cross-validation, and feature scaling help generalize performance to unseen test data.",
+        "ML pipelines involve: Data cleaning, exploratory data analysis, feature engineering, model selection, loss minimization, and evaluation using metrics like Precision, Recall, and ROC-AUC."
+      ]
+    },
+    {
+      "intent": "deep_learning",
+      "patterns": [
+        "What is deep learning",
+        "How do neural networks work",
+        "Explain activation functions",
+        "What is backpropagation",
+        "Why is deep learning better for perceptual tasks",
+        "What is the role of hidden layers",
+        "Difference between machine learning and deep learning",
+        "What is gradient descent",
+        "How do convolutional neural networks work",
+        "Explain recurrent neural networks and LSTMs",
+        "What is an embedding layer",
+        "Why do we use dropout in neural networks",
+        "What is the softmax activation function",
+        "Explain feedforward versus recurrent networks",
+        "How does Adam optimizer update network weights",
+        "What is vanishing gradient problem in deep networks",
+        "Why do deep neural networks require large datasets"
+      ],
+      "responses": [
+        "Deep Learning is a subset of Machine Learning utilizing multi-layered artificial neural networks (ANNs) capable of learning hierarchical feature representations directly from raw data.",
+        "In deep networks, backpropagation computes the gradient of the loss function with respect to weights using the chain rule, which optimizers like Adam use to update parameters iteratively.",
+        "Architectures like Bidirectional LSTMs process sequential data in both forward and backward directions, capturing rich bidirectional contextual dependencies ideal for text intent classification."
+      ]
+    },
+    {
+      "intent": "speech_recognition",
+      "patterns": [
+        "What is speech recognition",
+        "How does speech to text work",
+        "Explain acoustic modeling and language modeling",
+        "What is the Web Speech API",
+        "How do computers convert voice into text",
+        "Explain phonemes in speech processing",
+        "What is automatic speech recognition ASR",
+        "What is MFCC in speech processing",
+        "How does microphone audio get converted into digital signals",
+        "Explain spectrograms and audio features",
+        "What is connectionist temporal classification CTC",
+        "How do modern end to end speech recognition systems work",
+        "What role does sampling frequency play in audio processing",
+        "How does this application capture speech input",
+        "Explain Hidden Markov Models in speech recognition",
+        "What is Mel-Frequency Cepstral Coefficients",
+        "How does noise filtering affect speech recognition accuracy"
+      ],
+      "responses": [
+        "Automatic Speech Recognition (ASR) converts acoustic audio signals into textual transcripts by analyzing spectrograms, extracting features like MFCCs, and mapping them through acoustic and language models.",
+        "This application uses the browser's native Web Speech API (SpeechRecognition interface), which captures audio via microphone and streams it to client/cloud ASR engines for continuous speech-to-text conversion.",
+        "Speech processing involves sampling audio waves (typically 16 kHz), performing Fourier transforms to derive frequency-domain spectrograms, and using sequence models to predict phonetic tokens."
+      ]
+    },
+    {
+      "intent": "nlp",
+      "patterns": [
+        "What is natural language processing",
+        "Explain tokenization and stemming",
+        "What is text vectorization",
+        "How does intent classification work",
+        "Explain word embeddings",
+        "What is sequence modeling",
+        "How does an LSTM process text",
+        "What are language models",
+        "Explain lemmatization versus stemming",
+        "What is bag of words and TF-IDF",
+        "How does word2vec or GloVe generate semantic vectors",
+        "Explain attention mechanism and transformers in NLP",
+        "What is named entity recognition NER",
+        "Why is text preprocessing critical in NLP pipelines",
+        "How does this chatbot classify text into intents",
+        "Explain the role of the Softmax layer in NLP classification",
+        "What is text normalization in speech and language processing"
+      ],
+      "responses": [
+        "Natural Language Processing (NLP) enables computers to analyze, understand, and generate human languages. Core tasks include tokenization, POS tagging, named entity recognition, and sequence classification.",
+        "In this chatbot's NLP pipeline: raw user text is lowercased, stripped of punctuation, tokenized into integer sequence vectors, mapped to high-dimensional dense embeddings, and classified by a BiLSTM.",
+        "Word embeddings represent semantic relationships in continuous geometric vector space, where semantically similar words reside closer together by cosine distance."
+      ]
+    },
+    {
+      "intent": "college",
+      "patterns": [
+        "Tell me about college life",
+        "How to balance academics and clubs",
+        "How to approach professors for guidance",
+        "How to make the most of engineering college",
+        "Tips for college students",
+        "Campus life guidance",
+        "How to form study groups in college",
+        "How do I manage hostel life and studies",
+        "What should an engineering student focus on in college",
+        "How important are extracurricular activities in college",
+        "How can I maintain a good CGPA in college",
+        "Advice for freshman engineering students",
+        "How to build strong peer networks in university",
+        "How to manage attendance requirements in college",
+        "What makes a good engineering portfolio during college"
+      ],
+      "responses": [
+        "To make the most of college life: maintain a consistent CGPA above 8.0, participate actively in technical hackathons and clubs, build hands-on projects, and form study groups with motivated peers.",
+        "Balancing academics and extracurriculars requires time blocking: dedicate morning hours to lectures and revision, and reserve evenings for club activities and coding.",
+        "Approach professors proactively during office hours: show curiosity in their research publications, ask relevant domain questions, and request guidance on term projects."
+      ]
+    },
+    {
+      "intent": "timetable",
+      "patterns": [
+        "How to create an effective study timetable",
+        "Can you help me organize my daily schedule",
+        "Tips for time management",
+        "How to balance classes and self study",
+        "How to allocate time for assignments",
+        "Daily routine for an engineering student",
+        "How do I stop procrastinating on my schedule",
+        "Provide a daily timetable template for exam preparation",
+        "How many hours should I study each day",
+        "How to schedule project work along with lectures",
+        "What is the best way to plan my weekly schedule",
+        "How to build an academic routine that actually works",
+        "Tips for avoiding study fatigue and burnout",
+        "How should I split time between coding and theory"
+      ],
+      "responses": [
+        "A balanced daily schedule: 1) 3–4 focused hours for lectures and self-study, 2) 2 hours for hands-on coding and project assignments, 3) 1 hour for physical exercise, and 4) 7–8 hours of restful sleep.",
+        "Use time-blocking: categorize your day into 'Deep Work' (complex math and coding) in the morning and 'Shallow Work' (organizing notes, emails, reading) in the afternoon.",
+        "Review your timetable weekly: leave 20% buffer time for unexpected assignments, lab reports, and revision to prevent schedule collapses."
+      ]
+    },
+    {
+      "intent": "exams",
+      "patterns": [
+        "How to prepare for semester exams",
+        "Tips for scoring high marks in exams",
+        "How to handle exam stress and anxiety",
+        "Last minute revision strategy",
+        "How to write answers effectively in engineering exams",
+        "How to solve previous year question papers",
+        "What is the best approach for lab assessments and vivas",
+        "How to structure answers with diagrams in semester exams",
+        "How do I prepare for internal assessment tests",
+        "Tips for oral exams and viva voce questions",
+        "How can I remember theoretical definitions during exams",
+        "How to manage time inside the 3 hour examination hall",
+        "Strategy for answering numerical questions in engineering exams",
+        "How to revise the entire syllabus before the exam"
+      ],
+      "responses": [
+        "For semester exams and lab assessments: 1) Solve the last 5 years' question papers, 2) Highlight keywords and draw clear architectural block diagrams, and 3) Explain formulas with parameter definitions.",
+        "In viva voce evaluations: speak with clear confidence, explain fundamental intuitions before deep technicalities, and be honest if you need a moment to consider an unfamiliar concept.",
+        "Combat exam anxiety by doing timed mock tests, getting 7+ hours of sleep the night before, and reviewing compact summary formula sheets rather than re-reading entire textbooks."
+      ]
+    },
+    {
+      "intent": "projects",
+      "patterns": [
+        "How to choose a final year academic project",
+        "Ideas for speech and language processing projects",
+        "How to document a technical project",
+        "Best practices for AI project presentations",
+        "How to build a full stack AI project",
+        "How to test and benchmark project models",
+        "What makes a standout engineering capstone project",
+        "Suggest topics for NLP and deep learning mini projects",
+        "How to write a project report for college assessment",
+        "How do I deploy an AI machine learning project for evaluation",
+        "What metrics should I report in my project results",
+        "How should I design the project architecture diagram",
+        "How to explain model accuracy and loss curves in viva",
+        "Give me guidelines for building reliable software projects"
+      ],
+      "responses": [
+        "A standout SLP/AI project features: 1) A clearly defined problem statement, 2) A trained custom deep learning model, 3) Full-stack interactive deployment (FastAPI + React), and 4) Quantitative metrics (loss, accuracy, F1-score, confusion matrix).",
+        "Great project ideas in Speech and Language Processing include: Voice-enabled chatbots with BiLSTMs, phonetic speech keyword spotting, automated speech-to-intent dispatchers, and multilingual sentiment analyzers.",
+        "In your project report and viva presentation: highlight real data pipelines, model architecture configurations (layer dimensions, parameters), and validation loss/accuracy curves to demonstrate empirical rigor."
+      ]
+    },
+    {
+      "intent": "internship",
+      "patterns": [
+        "How to find software internships",
+        "How to prepare resume for tech internships",
+        "When should I apply for internships",
+        "Tips for cracking internship interviews",
+        "How to get research internships",
+        "What skills do companies look for in interns",
+        "How to build a portfolio for machine learning internships",
+        "Where should I search for AI engineering internships",
+        "How to prepare for internship coding tests",
+        "Advice on cold emailing professors for research internships",
+        "How to make my GitHub profile stand out to recruiters",
+        "What should I include in a sophomore or junior tech resume",
+        "How to prepare for behavioral and technical internship interviews",
+        "Do personal projects help in securing internships"
+      ],
+      "responses": [
+        "To land software and AI internships: 1) Build 2-3 polished, deployed GitHub projects with live demo links, 2) Keep a 1-page ATS-friendly resume highlighting measurable impacts, and 3) Apply early via LinkedIn, Wellfound, and campus career portals.",
+        "For research internships: read recent papers by target lab professors, write concise emails referencing their specific research findings, and showcase your experimental implementations.",
+        "In technical interviews: practice coding medium LeetCode data structure problems in Python, explain your thought process out loud, and thoroughly understand every project on your resume."
+      ]
+    },
+    {
+      "intent": "placement",
+      "patterns": [
+        "How to prepare for campus placements",
+        "What is the placement selection process",
+        "Tips for technical coding rounds",
+        "How to prepare for HR interviews",
+        "How to crack aptitude tests",
+        "How to practice system design and DSA for placements",
+        "What are standard rounds in campus placement drives",
+        "How to answer tell me about yourself in a job interview",
+        "How to prepare for core company placement rounds",
+        "What questions are commonly asked in software engineering interviews",
+        "How to negotiate or choose between multiple job offers",
+        "How to maintain calm during campus recruitment drives",
+        "What mistakes should I avoid in placement interviews",
+        "How important is competitive programming for campus placements",
+        "How can I prepare for campus placements and coding rounds?",
+        "Tips for campus placements and placement tests"
+      ],
+      "responses": [
+        "Campus placement preparation involves: 1) Quantitative and logical aptitude practice, 2) Strong mastery of Core CS subjects (OS, DBMS, Computer Networks, OOP), 3) Data Structures & Algorithms, and 4) Confident communication in HR/techno-managerial rounds.",
+        "In technical interview rounds: articulate your algorithmic complexity (Time: O(N log N), Space: O(1)), write clean variable names, and test edge cases (null inputs, boundary limits) proactively.",
+        "For the 'Tell me about yourself' question: structure your response chronologically using the Present-Past-Future model, highlighting your academic foundation, impactful technical projects, and career aspirations."
+      ]
+    },
+    {
+      "intent": "motivation",
+      "patterns": [
+        "I feel overwhelmed and demotivated",
+        "Give me some encouragement",
+        "I am worried about my grades",
+        "How to stay motivated during engineering",
+        "Inspire me",
+        "Remind me why hard work pays off",
+        "I feel burnt out from continuous exams",
+        "Keep pushing forward",
+        "I am finding computer science very tough",
+        "I failed a test and feel sad",
+        "Can you share an inspiring quote",
+        "How to bounce back after a poor academic result",
+        "Encourage me to keep coding and practicing",
+        "I feel like I have imposter syndrome",
+        "Give me a motivational message for my lab exam"
+      ],
+      "responses": [
+        "Remember: Mastery is a marathon, not a sprint. Every challenging bug you encounter and every complex equation you work through builds real engineering resilience.",
+        "Setbacks and difficult exams are valuable feedback loops, not final destinations. Stay curious, take breaks when needed, and focus on steady incremental progress each day.",
+        "Believe in your capability! The discipline you cultivate today while debugging models and mastering algorithms will define your future achievements as an engineer."
+      ]
+    },
+    {
+      "intent": "unknown",
+      "patterns": [
+        "asdfghjkl",
+        "qwertyuiop",
+        "blablabla zorp flim",
+        "xyzabc123456",
+        "supercalifragilisticexpialidocious randomness",
+        "foobar baz qux nonsense string",
+        "interstellar cosmic flux quantum potato",
+        "gibberish input here 999",
+        "what is the airspeed velocity of an unladen swallow",
+        "banana apple avocado flying refrigerator",
+        "hjklasdfpoiuytrewq",
+        "random syllables without semantic meaning",
+        "unrelated chaotic text sentence",
+        "beep boop blurp garble",
+        "abcdefghijklmnopqrstuvwxyz"
+      ],
+      "responses": [
+        "I'm not completely sure I understood that. Could you please rephrase your question or ask about machine learning, speech recognition, NLP, or college guidance?",
+        "I couldn't quite map that to an academic intent. Please try rephrasing, or ask about topics like deep learning, exams, or timetable planning!",
+        "That appears to be outside my current training domain. Feel free to ask about speech processing, AI concepts, or campus life!"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+======================================================================
+VOICEASSIST AI - MODEL EVALUATION METRICS REPORT
+======================================================================
+
+Total Dataset Utterances:   335
+Number of Intents/Classes:  20
+Training Samples (80%):     268
+Validation Samples (20%):   67
+Vocabulary Size:            634
+Maximum Sequence Length:    20
+
+----------------------------------------------------------------------
+PERFORMANCE SUMMARY:
+----------------------------------------------------------------------
+Training Accuracy:          97.76%
+Training Loss:              0.2334
+Validation Accuracy:        47.76%
+Validation Loss:            2.2457
+Macro Precision:            50.21%
+Macro Recall:               46.75%
+Macro F1-Score:             45.30%
+Weighted Precision:         52.65%
+Weighted Recall:            47.76%
+Weighted F1-Score:          46.85%
+
+----------------------------------------------------------------------
+DETAILED INTENT CLASSIFICATION REPORT:
+----------------------------------------------------------------------
+                    precision    recall  f1-score   support
+
+      capabilities       0.67      0.67      0.67         3
+           college       1.00      0.33      0.50         3
+     deep_learning       0.33      0.33      0.33         3
+             exams       0.67      0.67      0.67         3
+           goodbye       1.00      0.50      0.67         4
+          greeting       0.75      0.60      0.67         5
+              help       0.60      0.75      0.67         4
+        internship       0.00      0.00      0.00         3
+      introduction       0.80      1.00      0.89         4
+  machine_learning       0.60      1.00      0.75         3
+        motivation       0.00      0.00      0.00         3
+               nlp       0.00      0.00      0.00         3
+         placement       0.67      0.67      0.67         3
+       programming       0.25      0.25      0.25         4
+          projects       0.33      0.33      0.33         3
+speech_recognition       0.50      0.67      0.57         3
+        study_help       0.33      0.33      0.33         3
+            thanks       1.00      0.25      0.40         4
+         timetable       0.14      0.33      0.20         3
+           unknown       0.40      0.67      0.50         3
+
+          accuracy                           0.48        67
+         macro avg       0.50      0.47      0.45        67
+      weighted avg       0.53      0.48      0.47        67
+
