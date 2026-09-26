@@ -3,6 +3,17 @@
 > **Speech and Language Processing (SLP) Lab Assessment Project**  
 > An end-to-end conversational agent integrating **Browser Speech Recognition (Web Speech API)**, a **Bidirectional LSTM with Global Max Pooling Neural Network (TensorFlow/Keras)** for Intent Classification, and **Text-to-Speech (Web Speech Synthesis)**.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://frontend-eight-sage-75.vercel.app)
+[![API Docs](https://img.shields.io/badge/API%20Docs-FastAPI-009688?style=for-the-badge&logo=fastapi)](https://outdoor-tonight-tooth-qld.trycloudflare.com/docs)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/Rajat125tech/SLP-VoiceAssist-AI)
+
+### 🌐 Live Deployment Links
+* **Live Frontend Web App:** [https://frontend-eight-sage-75.vercel.app](https://frontend-eight-sage-75.vercel.app)
+* **Live Backend API Base:** [https://outdoor-tonight-tooth-qld.trycloudflare.com](https://outdoor-tonight-tooth-qld.trycloudflare.com)
+* **Interactive API Documentation (Swagger UI):** [https://outdoor-tonight-tooth-qld.trycloudflare.com/docs](https://outdoor-tonight-tooth-qld.trycloudflare.com/docs)
+* **GitHub Repository:** [https://github.com/Rajat125tech/SLP-VoiceAssist-AI](https://github.com/Rajat125tech/SLP-VoiceAssist-AI)
+* **1-Click Render Backend Blueprint:** [Deploy on Render](https://render.com/deploy?repo=https://github.com/Rajat125tech/SLP-VoiceAssist-AI)
+
 ---
 
 ## 1. Project Title & Overview
