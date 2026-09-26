@@ -20,7 +20,7 @@ METADATA_PATH = os.path.join(BASE_DIR, "model", "model_metadata.json")
 DATASET_PATH = os.path.join(BASE_DIR, "dataset", "intents.json")
 
 class VoiceAssistChatbot:
-    def __init__(self, confidence_threshold: float = 0.30):
+    def __init__(self, confidence_threshold: float = 0.50):
         self.confidence_threshold = confidence_threshold
         self.model = None
         self.tokenizer = None
@@ -46,6 +46,8 @@ class VoiceAssistChatbot:
                 with open(METADATA_PATH, "r", encoding="utf-8") as f:
                     self.metadata = json.load(f)
                     self.max_length = self.metadata.get("max_length", 25)
+                    if "confidence_threshold" in self.metadata:
+                        self.confidence_threshold = float(self.metadata["confidence_threshold"])
 
             # 3. Load Trained Model
             if os.path.exists(MODEL_PATH):
@@ -114,7 +116,7 @@ class VoiceAssistChatbot:
 
         # 1. Tokenize & Pad Sequence
         seq = self.tokenizer.texts_to_sequences([cleaned_text])
-        padded_seq = pad_sequences(seq, maxlen=self.max_length, padding="pre", truncating="post")
+        padded_seq = pad_sequences(seq, maxlen=self.max_length, padding="post", truncating="post")
 
         # 2. Model Prediction
         probabilities = self.model.predict(padded_seq, verbose=0)[0]

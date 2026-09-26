@@ -572,7 +572,7 @@ export default function App() {
 
           {/* Hint bar */}
           <div className="flex items-center justify-between text-[11px] text-slate-500 px-2 pb-1">
-            <span>Speech recognition via Web Speech API • Model: BiLSTM (110k params)</span>
+            <span>Speech recognition via Web Speech API • Model: BiLSTM + MaxPooling (139k params)</span>
             <button
               onClick={() => setIsModalOpen(true)}
               className="hover:text-cyan-400 underline transition"

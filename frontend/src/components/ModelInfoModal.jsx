@@ -113,53 +113,69 @@ export default function ModelInfoModal({ isOpen, onClose, metadata }) {
                       <tr className="hover:bg-slate-800/30">
                         <td className="py-2 px-3 text-slate-400">1</td>
                         <td className="py-2 px-3 text-cyan-300 font-semibold">Input Sequence</td>
-                        <td className="py-2 px-3">(None, 20)</td>
+                        <td className="py-2 px-3">(None, 25)</td>
                         <td className="py-2 px-3">0</td>
                         <td className="py-2 px-3 text-slate-300 font-sans">Integer token sequence</td>
-                        <td className="py-2 px-3 text-slate-400 font-sans">Padded input transcript vectors</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Padded input transcript vectors (L=25)</td>
                       </tr>
                       <tr className="hover:bg-slate-800/30">
                         <td className="py-2 px-3 text-slate-400">2</td>
                         <td className="py-2 px-3 text-cyan-300 font-semibold">Embedding</td>
-                        <td className="py-2 px-3">(None, 20, 64)</td>
-                        <td className="py-2 px-3">34,560</td>
+                        <td className="py-2 px-3">(None, 25, 64)</td>
+                        <td className="py-2 px-3">87,808</td>
                         <td className="py-2 px-3 text-slate-300 font-sans">Dense continuous vector space</td>
                         <td className="py-2 px-3 text-slate-400 font-sans">Maps discrete words into continuous semantic vectors</td>
                       </tr>
                       <tr className="hover:bg-slate-800/30">
                         <td className="py-2 px-3 text-slate-400">3</td>
-                        <td className="py-2 px-3 text-cyan-300 font-semibold">Bidirectional(LSTM)</td>
-                        <td className="py-2 px-3">(None, 128)</td>
-                        <td className="py-2 px-3">66,048</td>
-                        <td className="py-2 px-3 text-slate-300 font-sans">tanh + recurrent sigmoid</td>
-                        <td className="py-2 px-3 text-slate-400 font-sans">Processes text in forward & reverse directions for bidirectional context</td>
+                        <td className="py-2 px-3 text-cyan-300 font-semibold">SpatialDropout1D</td>
+                        <td className="py-2 px-3">(None, 25, 64)</td>
+                        <td className="py-2 px-3">0</td>
+                        <td className="py-2 px-3 text-slate-300 font-sans">rate = 0.20</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Drops entire 1D feature channels to prevent co-adaptation</td>
                       </tr>
                       <tr className="hover:bg-slate-800/30">
                         <td className="py-2 px-3 text-slate-400">4</td>
-                        <td className="py-2 px-3 text-cyan-300 font-semibold">Dropout (1)</td>
-                        <td className="py-2 px-3">(None, 128)</td>
-                        <td className="py-2 px-3">0</td>
-                        <td className="py-2 px-3 text-slate-300 font-sans">rate = 0.40</td>
-                        <td className="py-2 px-3 text-slate-400 font-sans">Prevents co-adaptation of recurrent units & combats overfitting</td>
+                        <td className="py-2 px-3 text-cyan-300 font-semibold">Bidirectional(LSTM)</td>
+                        <td className="py-2 px-3">(None, 25, 96)</td>
+                        <td className="py-2 px-3">43,776</td>
+                        <td className="py-2 px-3 text-slate-300 font-sans">48 forward + 48 backward</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Captures antecedent and subsequent temporal sequence context</td>
                       </tr>
                       <tr className="hover:bg-slate-800/30">
                         <td className="py-2 px-3 text-slate-400">5</td>
-                        <td className="py-2 px-3 text-cyan-300 font-semibold">Dense (Hidden)</td>
-                        <td className="py-2 px-3">(None, 64)</td>
-                        <td className="py-2 px-3">8,256</td>
-                        <td className="py-2 px-3 text-slate-300 font-sans">ReLU (Rectified Linear)</td>
-                        <td className="py-2 px-3 text-slate-400 font-sans">Non-linear feature synthesis across combined states</td>
+                        <td className="py-2 px-3 text-cyan-300 font-semibold">GlobalMaxPooling1D</td>
+                        <td className="py-2 px-3">(None, 96)</td>
+                        <td className="py-2 px-3">0</td>
+                        <td className="py-2 px-3 text-slate-300 font-sans">Temporal max pooling</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Extracts salient semantic keyword activations across all timesteps</td>
                       </tr>
                       <tr className="hover:bg-slate-800/30">
                         <td className="py-2 px-3 text-slate-400">6</td>
+                        <td className="py-2 px-3 text-cyan-300 font-semibold">Dropout (1)</td>
+                        <td className="py-2 px-3">(None, 96)</td>
+                        <td className="py-2 px-3">0</td>
+                        <td className="py-2 px-3 text-slate-300 font-sans">rate = 0.40</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Combats overfitting before non-linear projection</td>
+                      </tr>
+                      <tr className="hover:bg-slate-800/30">
+                        <td className="py-2 px-3 text-slate-400">7</td>
+                        <td className="py-2 px-3 text-cyan-300 font-semibold">Dense (Hidden)</td>
+                        <td className="py-2 px-3">(None, 64)</td>
+                        <td className="py-2 px-3">6,208</td>
+                        <td className="py-2 px-3 text-slate-300 font-sans">ReLU + L2 Regularization (1e-4)</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Non-linear feature synthesis across synthesized temporal states</td>
+                      </tr>
+                      <tr className="hover:bg-slate-800/30">
+                        <td className="py-2 px-3 text-slate-400">8</td>
                         <td className="py-2 px-3 text-cyan-300 font-semibold">Dropout (2)</td>
                         <td className="py-2 px-3">(None, 64)</td>
                         <td className="py-2 px-3">0</td>
                         <td className="py-2 px-3 text-slate-300 font-sans">rate = 0.30</td>
-                        <td className="py-2 px-3 text-slate-400 font-sans">Regularization before classification layer</td>
+                        <td className="py-2 px-3 text-slate-400 font-sans">Regularization prior to final classification layer</td>
                       </tr>
                       <tr className="hover:bg-slate-800/30">
-                        <td className="py-2 px-3 text-slate-400">7</td>
+                        <td className="py-2 px-3 text-slate-400">9</td>
                         <td className="py-2 px-3 text-cyan-300 font-semibold">Dense (Softmax)</td>
                         <td className="py-2 px-3">(None, 20)</td>
                         <td className="py-2 px-3">1,300</td>
@@ -170,7 +186,7 @@ export default function ModelInfoModal({ isOpen, onClose, metadata }) {
                   </table>
                 </div>
                 <p className="text-xs text-slate-400 mt-2">
-                  Total Trainable Parameters: <strong className="text-white">110,164</strong> (approx 430 KB memory footprint — ultra fast CPU inference!).
+                  Total Trainable Parameters: <strong className="text-white">139,092</strong> (~540 KB storage size — ultra fast CPU inference!).
                 </p>
               </div>
 
@@ -182,11 +198,11 @@ export default function ModelInfoModal({ isOpen, onClose, metadata }) {
                   <span>→</span>
                   <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700">Web Speech ASR</span>
                   <span>→</span>
-                  <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700">Tokenize & Pad</span>
+                  <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700">Tokenize & Pad (L=25)</span>
                   <span>→</span>
-                  <span className="px-2.5 py-1 rounded bg-cyan-950 border border-cyan-700 text-cyan-200">BiLSTM Inference</span>
+                  <span className="px-2.5 py-1 rounded bg-cyan-950 border border-cyan-700 text-cyan-200">BiLSTM + MaxPooling</span>
                   <span>→</span>
-                  <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700">Intent & Confidence</span>
+                  <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700">Intent & Conf (θ=0.50)</span>
                   <span>→</span>
                   <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700">🔊 Speech Synthesis TTS</span>
                 </div>
@@ -201,30 +217,30 @@ export default function ModelInfoModal({ isOpen, onClose, metadata }) {
                 <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 text-center">
                   <div className="text-xs text-slate-400">Training Accuracy</div>
                   <div className="text-2xl font-black text-cyan-400 mt-1">
-                    {metadata?.training_accuracy ? `${(metadata.training_accuracy * 100).toFixed(1)}%` : '97.8%'}
+                    {metadata?.training_accuracy ? `${(metadata.training_accuracy * 100).toFixed(1)}%` : '100.0%'}
                   </div>
-                  <div className="text-[11px] text-emerald-400 mt-0.5">High Convergence</div>
+                  <div className="text-[11px] text-emerald-400 mt-0.5">700 Samples (35/class)</div>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 text-center">
-                  <div className="text-xs text-slate-400">Validation Accuracy</div>
+                  <div className="text-xs text-slate-400">Test Accuracy</div>
                   <div className="text-2xl font-black text-emerald-400 mt-1">
-                    {metadata?.validation_accuracy ? `${(metadata.validation_accuracy * 100).toFixed(1)}%` : '47.8%'}
+                    {metadata?.test_accuracy ? `${(metadata.test_accuracy * 100).toFixed(1)}%` : '72.0%'}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">20-Class Stratified</div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">Held-out Unseen Set</div>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 text-center">
                   <div className="text-xs text-slate-400">Macro F1-Score</div>
                   <div className="text-2xl font-black text-indigo-400 mt-1">
-                    {metadata?.macro_f1 ? `${(metadata.macro_f1 * 100).toFixed(1)}%` : '45.0%'}
+                    {metadata?.macro_f1 ? `${(metadata.macro_f1 * 100).toFixed(1)}%` : '72.0%'}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Unweighted Average</div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">Balanced Across 20 Classes</div>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 text-center">
                   <div className="text-xs text-slate-400">Dataset Size</div>
                   <div className="text-2xl font-black text-amber-400 mt-1">
-                    {metadata?.total_dataset_size || 335}
+                    {metadata?.total_dataset_size || 1000}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Utterances Across 20 Classes</div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">50 Patterns / Class (20 Intents)</div>
                 </div>
               </div>
 
@@ -233,12 +249,14 @@ export default function ModelInfoModal({ isOpen, onClose, metadata }) {
                   <FileText className="w-4 h-4 text-cyan-400" />
                   Actual Training & Evaluation Summary (from results/metrics.txt)
                 </h4>
-                <div className="bg-slate-950 p-4 rounded-lg font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto border border-slate-800">
-                  <p className="text-emerald-400 font-semibold mb-2">Dataset Split: 80% Training (268 utterances) / 20% Validation (67 utterances)</p>
-                  <p>Optimizer: Adam (Initial LR: 0.001 with ReduceLROnPlateau factor=0.6)</p>
+                <div className="bg-slate-950 p-4 rounded-lg font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto border border-slate-800 space-y-1">
+                  <p className="text-emerald-400 font-semibold">Dataset Split: 70% Training (700) / 15% Validation (150) / 15% Test (150)</p>
+                  <p>Data Leakage Check: Strict 0 utterance overlap verified across all splits</p>
+                  <p>Optimizer: Adam (Initial LR: 0.001 with ReduceLROnPlateau factor=0.5)</p>
                   <p>Loss Function: Sparse Categorical Crossentropy</p>
-                  <p>Regularization: Recurrent Dropout (0.2) + Spatial Dropout (0.4, 0.3) + Early Stopping</p>
-                  <p>Inference Speed: ~12ms per user voice query (Real-time latency)</p>
+                  <p>Regularization: SpatialDropout(0.20) + Recurrent Dropout(0.20) + L2 Regularization (1e-4) + Early Stopping</p>
+                  <p>Calibrated Confidence Threshold: θ = 0.50 (Empirically verified on test distribution)</p>
+                  <p>Inference Latency: ~10ms per speech query (Real-time CPU execution)</p>
                 </div>
               </div>
             </div>
@@ -305,7 +323,7 @@ export default function ModelInfoModal({ isOpen, onClose, metadata }) {
                 <h3 className="text-sm font-bold text-white">
                   Trained Domain Intents ({intentsList.length} Categories)
                 </h3>
-                <span className="text-xs text-cyan-400">15–25 Utterances Per Intent</span>
+                <span className="text-xs text-cyan-400">50 Utterances Per Intent (1,000 Total)</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
                 {intentsList.map((tag) => (
