@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Mic, MicOff, Send, Volume2, Sparkles, Brain, Info, 
+  Mic, MicOff, Send, Volume2, VolumeX, Sparkles, Brain, Info, 
   RotateCcw, Server, Activity, ShieldCheck, AlertCircle, 
-  HelpCircle, MessageSquare, Terminal, ExternalLink 
+  HelpCircle, MessageSquare, Terminal, ExternalLink, Settings, Play
 } from 'lucide-react';
 import ChatMessage from './components/ChatMessage';
 import VoiceIndicator from './components/VoiceIndicator';
@@ -11,6 +11,52 @@ import ModelInfoModal from './components/ModelInfoModal';
 // Default API URL from environment or fallback
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// List of scary, raspy, or novelty legacy system voices to strictly avoid
+const CREEPY_LEGACY_VOICES = [
+  'Albert', 'Bad News', 'Bahh', 'Bells', 'Boing', 'Bubbles', 'Cellos',
+  'Fred', 'Good News', 'Organ', 'Ralph', 'Trinoids', 'Whisper', 'Wobble', 'Zarvox', 'Deranged', 'Hysterical'
+];
+
+// Helper to choose a warm, friendly, natural assistant voice
+const findBestFriendlyVoice = (voices) => {
+  if (!voices || voices.length === 0) return null;
+
+  const safeVoices = voices.filter(v => 
+    !CREEPY_LEGACY_VOICES.some(scary => v.name.toLowerCase().includes(scary.toLowerCase()))
+  );
+
+  // Preferred natural voices in priority order
+  const priorityList = [
+    'Google US English',
+    'Samantha (Enhanced)',
+    'Samantha',
+    'Karen (Enhanced)',
+    'Karen',
+    'Victoria (Enhanced)',
+    'Victoria',
+    'Siri',
+    'Daniel',
+    'Alex',
+    'Microsoft Jenny',
+    'Microsoft Zira',
+    'en-US',
+    'en_US'
+  ];
+
+  for (const preferred of priorityList) {
+    const match = safeVoices.find(v => 
+      v.name.toLowerCase().includes(preferred.toLowerCase()) || 
+      v.lang.toLowerCase().includes(preferred.toLowerCase())
+    );
+    if (match) return match;
+  }
+
+  const anyEnglish = safeVoices.find(v => v.lang.startsWith('en'));
+  if (anyEnglish) return anyEnglish;
+
+  return safeVoices.length > 0 ? safeVoices[0] : voices[0];
+};
+
 export default function App() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -18,12 +64,28 @@ export default function App() {
   const [interimTranscript, setInterimTranscript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [backendStatus, setBackendStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
-  const [backendUrl, setBackendUrl] = useState(DEFAULT_API_URL);
+  const [backendUrl, setBackendUrl] = useState(() => {
+    return localStorage.getItem('voiceassist_backend_url') || DEFAULT_API_URL;
+  });
+
+  const handleUrlChange = (newUrl) => {
+    setBackendUrl(newUrl);
+    localStorage.setItem('voiceassist_backend_url', newUrl);
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modelMetadata, setModelMetadata] = useState(null);
   const [speechError, setSpeechError] = useState(null);
   const [speakingId, setSpeakingId] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
+
+  // Voice Customization State
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState(() => {
+    return localStorage.getItem('voiceassist_preferred_voice') || '';
+  });
+  const [speechRate, setSpeechRate] = useState(1.0);
+  const [speechPitch, setSpeechPitch] = useState(1.0);
+  const [isPreviewSpeaking, setIsPreviewSpeaking] = useState(false);
 
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -64,6 +126,42 @@ export default function App() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, interimTranscript, isLoading]);
+
+  // Load browser speech synthesis voices and set friendly default
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) return;
+
+    const updateVoices = () => {
+      const allVoices = window.speechSynthesis.getVoices();
+      if (!allVoices || allVoices.length === 0) return;
+
+      const cleanVoices = allVoices.filter(v => 
+        !CREEPY_LEGACY_VOICES.some(scary => v.name.toLowerCase().includes(scary.toLowerCase()))
+      );
+
+      setAvailableVoices(cleanVoices.length > 0 ? cleanVoices : allVoices);
+
+      const saved = localStorage.getItem('voiceassist_preferred_voice');
+      if (saved && allVoices.some(v => v.name === saved)) {
+        setSelectedVoiceName(saved);
+      } else {
+        const best = findBestFriendlyVoice(allVoices);
+        if (best) {
+          setSelectedVoiceName(best.name);
+          localStorage.setItem('voiceassist_preferred_voice', best.name);
+        }
+      }
+    };
+
+    updateVoices();
+    window.speechSynthesis.onvoiceschanged = updateVoices;
+
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
 
   // Setup Web Speech Recognition API
   useEffect(() => {
@@ -184,12 +282,45 @@ export default function App() {
     setSpeakingId(msgId);
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.lang = 'en-US';
+    utterance.rate = speechRate;
+    utterance.pitch = speechPitch;
+
+    // Attach selected friendly voice
+    const voices = window.speechSynthesis.getVoices();
+    const voiceToUse = voices.find(v => v.name === selectedVoiceName) || findBestFriendlyVoice(voices);
+    if (voiceToUse) {
+      utterance.voice = voiceToUse;
+      utterance.lang = voiceToUse.lang || 'en-US';
+    } else {
+      utterance.lang = 'en-US';
+    }
 
     utterance.onend = () => setSpeakingId(null);
     utterance.onerror = () => setSpeakingId(null);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Preview Voice Sample
+  const handlePreviewVoice = () => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    setIsPreviewSpeaking(true);
+
+    const sampleText = "Hello! I am VoiceAssist AI. How can I assist your speech and language processing studies today?";
+    const utterance = new SpeechSynthesisUtterance(sampleText);
+    utterance.rate = speechRate;
+    utterance.pitch = speechPitch;
+
+    const voices = window.speechSynthesis.getVoices();
+    const voiceToUse = voices.find(v => v.name === selectedVoiceName) || findBestFriendlyVoice(voices);
+    if (voiceToUse) {
+      utterance.voice = voiceToUse;
+      utterance.lang = voiceToUse.lang || 'en-US';
+    }
+
+    utterance.onend = () => setIsPreviewSpeaking(false);
+    utterance.onerror = () => setIsPreviewSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
   };
@@ -198,6 +329,7 @@ export default function App() {
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
       setSpeakingId(null);
+      setIsPreviewSpeaking(false);
     }
   };
 
@@ -254,10 +386,21 @@ export default function App() {
       setMessages((prev) => [...prev, botMsg]);
     } catch (err) {
       console.error("Inference Error:", err);
+      let errorDetail = `Unable to reach the Deep Learning inference backend at ${backendUrl}.`;
+      if (backendUrl.includes('trycloudflare.com')) {
+        errorDetail += ' The Cloudflare Tunnel URL has expired or was closed. Please restart your cloudflared tunnel or switch to http://localhost:8000.';
+      } else if (backendUrl.includes('onrender.com')) {
+        errorDetail += ' If using Render, the backend server may take 30-50 seconds to spin up from cold sleep. Please wait a moment and try again.';
+      } else if (backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')) {
+        errorDetail += ' Please ensure your local FastAPI backend is running (e.g. `uvicorn main:app --reload` inside the backend directory).';
+      } else {
+        errorDetail += ' Please verify the backend service is running and accessible.';
+      }
+
       const errorMsg = {
         id: (Date.now() + 1).toString(),
         sender: 'assistant',
-        text: `Unable to reach the Deep Learning inference backend at ${backendUrl}. If using Render, the backend server may take 30-50 seconds to spin up from cold sleep. Please verify the backend is running.`,
+        text: errorDetail,
         intent: 'network_error',
         confidence: 0.0,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -331,6 +474,16 @@ export default function App() {
               </span>
             </button>
 
+            {/* Voice & Audio Config Toggle */}
+            <button
+              onClick={() => setShowConfig(!showConfig)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition"
+              title="Change Voice Persona, Speed & Audio Settings"
+            >
+              <Volume2 className="w-4 h-4 text-indigo-400" />
+              <span className="hidden sm:inline">Voice & API</span>
+            </button>
+
             {/* Model Info Button */}
             <button
               onClick={() => setIsModalOpen(true)}
@@ -353,9 +506,10 @@ export default function App() {
 
         </div>
 
-        {/* Backend URL Config Banner (Collapsible) */}
+        {/* Backend & Voice Config Banner (Collapsible) */}
         {showConfig && (
-          <div className="bg-slate-900 border-t border-slate-800 px-4 py-2.5 text-xs text-slate-300 animate-in fade-in duration-150">
+          <div className="bg-slate-900 border-t border-slate-800 px-4 py-3 text-xs text-slate-300 animate-in fade-in duration-150 space-y-3">
+            {/* Backend URL Config */}
             <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-1 min-w-[280px]">
                 <Server className="w-4 h-4 text-cyan-400 shrink-0" />
@@ -363,21 +517,106 @@ export default function App() {
                 <input
                   type="text"
                   value={backendUrl}
-                  onChange={(e) => setBackendUrl(e.target.value)}
+                  onChange={(e) => handleUrlChange(e.target.value)}
                   placeholder="http://localhost:8000 or https://your-backend.onrender.com"
                   className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-cyan-300 flex-1 font-mono focus:outline-none focus:border-cyan-500"
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
+                  type="button"
+                  onClick={() => {
+                    handleUrlChange('http://localhost:8000');
+                    checkHealth('http://localhost:8000');
+                  }}
+                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg text-xs transition"
+                  title="Switch to local development server"
+                >
+                  Localhost:8000
+                </button>
+                <button
+                  type="button"
                   onClick={() => checkHealth(backendUrl)}
                   className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-semibold transition text-xs"
                 >
                   Test Connection
                 </button>
+              </div>
+            </div>
+
+            {/* Voice Persona & Speech Synthesis Config */}
+            <div className="max-w-5xl mx-auto pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+                <Volume2 className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span className="font-semibold text-white">Voice Persona:</span>
+                <select
+                  value={selectedVoiceName}
+                  onChange={(e) => {
+                    setSelectedVoiceName(e.target.value);
+                    localStorage.setItem('voiceassist_preferred_voice', e.target.value);
+                  }}
+                  className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-indigo-300 flex-1 focus:outline-none focus:border-indigo-500 truncate"
+                >
+                  {availableVoices.length > 0 ? (
+                    availableVoices.map((v) => (
+                      <option key={v.name} value={v.name} className="bg-slate-900 text-slate-200">
+                        {v.name} ({v.lang})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" className="bg-slate-900 text-slate-200">Default Natural Voice</option>
+                  )}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Voice Speed */}
+                <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                  <span className="text-[11px] text-slate-400">Speed:</span>
+                  <select
+                    value={speechRate}
+                    onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                    className="bg-transparent text-slate-300 text-xs focus:outline-none cursor-pointer"
+                  >
+                    <option value="0.9" className="bg-slate-900 text-slate-200">0.9x (Relaxed)</option>
+                    <option value="1.0" className="bg-slate-900 text-slate-200">1.0x (Normal)</option>
+                    <option value="1.1" className="bg-slate-900 text-slate-200">1.1x (Brisk)</option>
+                  </select>
+                </div>
+
+                {/* Voice Pitch */}
+                <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                  <span className="text-[11px] text-slate-400">Tone:</span>
+                  <select
+                    value={speechPitch}
+                    onChange={(e) => setSpeechPitch(parseFloat(e.target.value))}
+                    className="bg-transparent text-slate-300 text-xs focus:outline-none cursor-pointer"
+                  >
+                    <option value="0.95" className="bg-slate-900 text-slate-200">Warm / Deep</option>
+                    <option value="1.0" className="bg-slate-900 text-slate-200">Balanced</option>
+                    <option value="1.1" className="bg-slate-900 text-slate-200">Friendly / Bright</option>
+                  </select>
+                </div>
+
+                {/* Preview Button */}
                 <button
+                  type="button"
+                  onClick={isPreviewSpeaking ? handleStopSpeak : handlePreviewVoice}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-semibold transition text-xs ${
+                    isPreviewSpeaking 
+                      ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
+                      : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                  }`}
+                  title="Click to hear a sample of this voice"
+                >
+                  {isPreviewSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                  <span>{isPreviewSpeaking ? 'Stop' : 'Test Voice'}</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setShowConfig(false)}
-                  className="px-2 py-1 text-slate-400 hover:text-white"
+                  className="px-2.5 py-1 text-slate-400 hover:text-white transition"
                 >
                   Done
                 </button>

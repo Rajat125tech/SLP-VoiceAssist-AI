@@ -9,8 +9,8 @@
 
 ### 🌐 Live Deployment Links
 * **Live Frontend Web App:** [https://frontend-eight-sage-75.vercel.app](https://frontend-eight-sage-75.vercel.app)
-* **Live Backend API Base:** [https://outdoor-tonight-tooth-qld.trycloudflare.com](https://outdoor-tonight-tooth-qld.trycloudflare.com)
-* **Interactive API Documentation (Swagger UI):** [https://outdoor-tonight-tooth-qld.trycloudflare.com/docs](https://outdoor-tonight-tooth-qld.trycloudflare.com/docs)
+* **Live Backend API Base:** [https://voiceassist-ai-backend.onrender.com](https://voiceassist-ai-backend.onrender.com)
+* **Interactive API Documentation (Swagger UI):** [https://voiceassist-ai-backend.onrender.com/docs](https://voiceassist-ai-backend.onrender.com/docs)
 * **GitHub Repository:** [https://github.com/Rajat125tech/SLP-VoiceAssist-AI](https://github.com/Rajat125tech/SLP-VoiceAssist-AI)
 * **1-Click Render Backend Blueprint:** [Deploy on Render](https://render.com/deploy?repo=https://github.com/Rajat125tech/SLP-VoiceAssist-AI)
 
