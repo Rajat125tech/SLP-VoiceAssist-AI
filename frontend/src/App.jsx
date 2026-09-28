@@ -4,7 +4,7 @@ import {
   RotateCcw, Server, Activity, ShieldCheck, AlertCircle, 
   HelpCircle, MessageSquare, Terminal, ExternalLink, Settings, Play,
   ChevronRight, ChevronDown, ChevronUp, Layers, BarChart2, CheckCircle2, 
-  Zap, Compass, Sliders, RefreshCw, X, Radio, MessageCircle
+  Zap, Compass, Sliders, RefreshCw, X, Radio, MessageCircle, User, Cpu
 } from 'lucide-react';
 import ChatMessage from './components/ChatMessage';
 import VoiceIndicator from './components/VoiceIndicator';
@@ -27,7 +27,6 @@ const findBestFriendlyVoice = (voices) => {
     !CREEPY_LEGACY_VOICES.some(scary => v.name.toLowerCase().includes(scary.toLowerCase()))
   );
 
-  // Preferred natural voices in priority order
   const priorityList = [
     'Google US English',
     'Samantha (Enhanced)',
@@ -59,73 +58,73 @@ const findBestFriendlyVoice = (voices) => {
   return safeVoices.length > 0 ? safeVoices[0] : voices[0];
 };
 
-// Categorized domain prompts for the left sidebar explorer
+// Categorized domain prompts for the Topic Explorer drawer
 const DOMAIN_CATEGORIES = [
   {
     id: 'deep_learning',
-    title: 'Deep Learning & Neural Nets',
+    title: 'Deep Learning & Neural Networks',
     icon: Brain,
-    color: 'text-indigo-400',
-    borderColor: 'border-indigo-500/30',
-    bgColor: 'bg-indigo-500/10',
+    color: 'text-violet-400',
+    bgColor: 'bg-violet-500/10',
+    borderColor: 'border-violet-500/20',
     prompts: [
       { label: "Deep Learning basics", query: "Can you explain how deep neural networks work?" },
       { label: "Forward vs Backprop", query: "Explain forward pass and backpropagation in deep learning" },
       { label: "BiLSTM architecture", query: "Why use Bidirectional LSTM with Global Max Pooling for text?" },
-      { label: "Embedding layers", query: "How do neural embedding layers represent words?" }
+      { label: "Word Embeddings", query: "How do neural embedding layers represent words?" }
     ]
   },
   {
     id: 'speech_processing',
     title: 'Speech Recognition (ASR)',
     icon: Mic,
-    color: 'text-cyan-400',
-    borderColor: 'border-cyan-500/30',
-    bgColor: 'bg-cyan-500/10',
+    color: 'text-pink-400',
+    bgColor: 'bg-pink-500/10',
+    borderColor: 'border-pink-500/20',
     prompts: [
       { label: "How ASR works", query: "How does speech to text conversion work in ASR?" },
-      { label: "Acoustic modeling & MFCCs", query: "What are MFCCs and acoustic feature extraction in speech?" },
+      { label: "Acoustic Modeling & MFCCs", query: "What are MFCCs and acoustic feature extraction in speech?" },
       { label: "Web Speech API", query: "How does the client-side Web Speech API capture audio?" }
     ]
   },
   {
     id: 'nlp',
-    title: 'NLP & Language Processing',
+    title: 'NLP & Intent Classification',
     icon: MessageSquare,
-    color: 'text-purple-400',
-    borderColor: 'border-purple-500/30',
-    bgColor: 'bg-purple-500/10',
+    color: 'text-indigo-400',
+    bgColor: 'bg-indigo-500/10',
+    borderColor: 'border-indigo-500/20',
     prompts: [
       { label: "NLP & Tokenization", query: "Explain natural language processing and tokenization" },
-      { label: "Intent Classification", query: "How does this chatbot classify user intents using Softmax?" },
+      { label: "Softmax Classification", query: "How does this chatbot classify user intents using Softmax?" },
       { label: "Sequence Padding", query: "Why is pad_sequences max_len=25 used before LSTM layers?" }
     ]
   },
   {
     id: 'academics',
-    title: 'Academics & Placement',
+    title: 'Academics & Placements',
     icon: CheckCircle2,
     color: 'text-emerald-400',
-    borderColor: 'border-emerald-500/30',
     bgColor: 'bg-emerald-500/10',
+    borderColor: 'border-emerald-500/20',
     prompts: [
-      { label: "Campus Placements", query: "What should I study before campus recruitment and coding rounds?" },
-      { label: "Semester Exams prep", query: "How can I score higher marks in semester exams and vivas?" },
-      { label: "Capstone Projects", query: "How should we organize software architecture in capstone reports?" },
+      { label: "Campus Recruitment prep", query: "What should I study before campus recruitment and coding rounds?" },
+      { label: "Semester Exams advice", query: "How can I score higher marks in semester exams and vivas?" },
+      { label: "Capstone Projects structure", query: "How should we organize software architecture in capstone reports?" },
       { label: "Study Timetable", query: "Can you help me organize a daily engineering study timetable?" }
     ]
   },
   {
     id: 'ood_testing',
-    title: 'Out-Of-Domain (OOD) Fallback',
+    title: 'Fallback & Robustness',
     icon: ShieldCheck,
-    color: 'text-rose-400',
-    borderColor: 'border-rose-500/30',
-    bgColor: 'bg-rose-500/10',
+    color: 'text-amber-400',
+    bgColor: 'bg-amber-500/10',
+    borderColor: 'border-amber-500/20',
     prompts: [
-      { label: "Geography test", query: "What is the capital of France?" },
+      { label: "Out of domain test", query: "What is the capital of France?" },
       { label: "Weather test", query: "Tell me today's weather forecast." },
-      { label: "Synthetic Noise", query: "zorp flim flam interstellar potato flying 98765" }
+      { label: "Random noise test", query: "zorp flim flam interstellar potato flying 98765" }
     ]
   }
 ];
@@ -152,9 +151,9 @@ export default function App() {
   const [speakingId, setSpeakingId] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
 
-  // Responsive Drawer Toggles for Mobile/Tablet
-  const [showMobileExplorer, setShowMobileExplorer] = useState(false);
-  const [showMobileTelemetry, setShowMobileTelemetry] = useState(false);
+  // Drawer Toggles
+  const [showExplorer, setShowExplorer] = useState(false);
+  const [showTelemetry, setShowTelemetry] = useState(false);
 
   // Latest Prediction Telemetry State
   const [latestPrediction, setLatestPrediction] = useState(null);
@@ -207,7 +206,7 @@ export default function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, interimTranscript, isLoading]);
 
-  // Load browser speech synthesis voices and set friendly default
+  // Load browser speech synthesis voices
   useEffect(() => {
     if (!('speechSynthesis' in window)) return;
 
@@ -375,7 +374,7 @@ export default function App() {
     window.speechSynthesis.cancel();
     setIsPreviewSpeaking(true);
 
-    const sampleText = "Hello! I am VoiceAssist AI. How can I assist your speech and language processing studies today?";
+    const sampleText = "Hello! I am VoiceAssist AI, created by Rajat. How can I assist your speech and language processing studies today?";
     const utterance = new SpeechSynthesisUtterance(sampleText);
     utterance.rate = speechRate;
     utterance.pitch = speechPitch;
@@ -464,14 +463,12 @@ export default function App() {
     } catch (err) {
       console.error("Inference Error:", err);
       let errorDetail = `Unable to reach the Deep Learning inference backend at ${backendUrl}.`;
-      if (backendUrl.includes('trycloudflare.com')) {
-        errorDetail += ' The Cloudflare Tunnel URL has expired or was closed. Please restart your cloudflared tunnel or switch to your Render backend.';
-      } else if (backendUrl.includes('onrender.com')) {
-        errorDetail += ' If the Render backend was sleeping, it takes 30-50 seconds to wake up from cold start. Please wait a moment and try again.';
+      if (backendUrl.includes('onrender.com')) {
+        errorDetail += ' If the Render backend was idling, it takes 30-50 seconds to wake up from cold start. Please wait a few moments and try again.';
       } else if (backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')) {
         errorDetail += ' Please ensure your local FastAPI backend is running (uvicorn main:app --reload inside backend/).';
       } else {
-        errorDetail += ' Please verify the backend service is running and accessible.';
+        errorDetail += ' Please verify the backend service is running and reachable.';
       }
 
       const errorMsg = {
@@ -497,129 +494,213 @@ export default function App() {
     setInterimTranscript('');
   };
 
-  // Quick stats
-  const totalQueries = messages.filter(m => m.sender === 'user').length;
-  const assistantMessages = messages.filter(m => m.sender === 'assistant' && m.confidence !== undefined && m.intent !== 'network_error');
-  const avgConfidence = assistantMessages.length > 0 
-    ? (assistantMessages.reduce((acc, m) => acc + m.confidence, 0) / assistantMessages.length * 100).toFixed(1)
-    : null;
-
   return (
-    <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-100 font-sans overflow-hidden">
+    <div className="flex flex-col h-screen w-full bg-[#09090e] text-zinc-100 font-sans overflow-hidden antialiased">
       
-      {/* HEADER */}
-      <header className="shrink-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-[1920px] mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+      {/* ============================================================ */}
+      {/* TOP NAVBAR: Sleek, Aesthetic & Proudly Crediting Rajat */}
+      {/* ============================================================ */}
+      <header className="shrink-0 z-30 bg-[#0f0f16]/90 backdrop-blur-xl border-b border-white/[0.08]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
           
-          {/* Logo & Project Title */}
+          {/* Logo, Title & Created By Rajat Badge */}
           <div className="flex items-center gap-3">
-            <div className="relative p-2 rounded-xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 text-white shadow-lg glow-cyan">
+            <div className="relative p-2 rounded-2xl bg-gradient-to-tr from-violet-600 via-purple-600 to-indigo-600 text-white shadow-lg glow-violet">
               <Mic className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
-                  VoiceAssist <span className="text-cyan-400">AI</span>
+            
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+                  VoiceAssist <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">AI</span>
                 </h1>
-                <span className="hidden sm:inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                
+                {/* PROMINENT CREATED BY RAJAT PILL */}
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-violet-500/15 via-purple-500/15 to-pink-500/15 text-violet-300 border border-violet-500/30 shadow-sm">
+                  <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
+                  <span>Created by Rajat</span>
+                </span>
+
+                <span className="hidden md:inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-white/10">
                   SLP Lab Project
                 </span>
-                <span className="hidden md:inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
-                  TensorFlow BiLSTM
-                </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
-                Voice-Enabled Deep Learning Conversational Interface • 20 Academic Intents
-              </p>
             </div>
           </div>
 
-          {/* Action Buttons & Status Indicators */}
-          <div className="flex items-center gap-2">
+          {/* Action Controls & Navigation Toggles */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
             
-            {/* Mobile Explorer Toggle */}
+            {/* Topic Explorer Toggle */}
             <button
-              onClick={() => setShowMobileExplorer(!showMobileExplorer)}
-              className="lg:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition"
-              title="Browse Domain Question Bank"
+              onClick={() => setShowExplorer(!showExplorer)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition ${
+                showExplorer 
+                  ? 'bg-violet-500/20 text-violet-300 border-violet-500/40 shadow-sm'
+                  : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border-white/[0.08]'
+              }`}
+              title="Explore Pre-trained Topic Prompts"
             >
-              <Compass className="w-4 h-4 text-cyan-400" />
+              <Compass className="w-3.5 h-3.5 text-violet-400" />
               <span className="hidden sm:inline">Topics</span>
             </button>
 
-            {/* Mobile Telemetry Toggle */}
+            {/* Neural Telemetry Toggle */}
             <button
-              onClick={() => setShowMobileTelemetry(!showMobileTelemetry)}
-              className="xl:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition"
-              title="View Neural Network Telemetry"
+              onClick={() => setShowTelemetry(!showTelemetry)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition ${
+                showTelemetry 
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
+                  : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border-white/[0.08]'
+              }`}
+              title="View Live Softmax Inference Telemetry"
             >
-              <Activity className="w-4 h-4 text-indigo-400" />
+              <Activity className="w-3.5 h-3.5 text-emerald-400" />
               <span className="hidden sm:inline">Telemetry</span>
-            </button>
-
-            {/* Backend Status Badge */}
-            <button
-              onClick={() => setShowConfig(!showConfig)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-xs transition"
-              title="Click to view/change Backend API URL"
-            >
-              <span className={`w-2 h-2 rounded-full ${
-                backendStatus === 'online' ? 'bg-emerald-400 animate-pulse' :
-                backendStatus === 'checking' ? 'bg-amber-400 animate-ping' : 'bg-rose-400'
-              }`} />
-              <span className="text-slate-300 font-medium hidden md:inline">
-                {backendStatus === 'online' ? 'Backend Live' : backendStatus === 'checking' ? 'Connecting...' : 'Offline'}
-              </span>
             </button>
 
             {/* Voice & Settings Toggle */}
             <button
               onClick={() => setShowConfig(!showConfig)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition"
-              title="Change Voice Persona, Speed & Audio Settings"
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-medium transition ${
+                showConfig
+                  ? 'bg-zinc-800 text-white border-white/20'
+                  : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border-white/[0.08]'
+              }`}
+              title="Voice Persona & Audio Controls"
             >
-              <Volume2 className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="hidden sm:inline">Voice & API</span>
+              <Volume2 className="w-3.5 h-3.5 text-purple-400" />
+              <span className="hidden md:inline">Voice & API</span>
             </button>
 
-            {/* Model Architecture Modal */}
+            {/* Backend Health Badge */}
+            <div 
+              onClick={() => setShowConfig(!showConfig)}
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-900/80 border border-white/[0.08] text-xs cursor-pointer hover:bg-zinc-800 transition"
+              title="Click to inspect Backend API endpoint"
+            >
+              <span className={`w-2 h-2 rounded-full ${
+                backendStatus === 'online' ? 'bg-emerald-400 animate-pulse' :
+                backendStatus === 'checking' ? 'bg-amber-400 animate-ping' : 'bg-rose-400'
+              }`} />
+              <span className="text-zinc-400 text-[11px] font-medium">
+                {backendStatus === 'online' ? 'Online' : backendStatus === 'checking' ? 'Connecting...' : 'Offline'}
+              </span>
+            </div>
+
+            {/* Model Architecture Modal Trigger */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-semibold transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-purple-600/20 hover:from-violet-600/30 hover:to-purple-600/30 text-violet-300 border border-violet-500/30 text-xs font-semibold transition"
+              title="Inspect BiLSTM Neural Network Model Details"
             >
-              <Brain className="w-3.5 h-3.5" />
+              <Brain className="w-3.5 h-3.5 text-violet-400" />
               <span className="hidden sm:inline">Model Info</span>
             </button>
 
             {/* Reset Chat */}
-            <button
-              onClick={handleResetChat}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition border border-transparent hover:border-slate-700"
-              title="Reset Conversation"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
+            {messages.length > 0 && (
+              <button
+                onClick={handleResetChat}
+                className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition border border-transparent hover:border-white/10"
+                title="Clear Chat History"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
 
           </div>
 
         </div>
 
-        {/* Collapsible Backend & Voice Config Banner */}
+        {/* Collapsible Voice & API Settings Banner */}
         {showConfig && (
-          <div className="bg-slate-900 border-t border-slate-800 px-4 py-3 text-xs text-slate-300 animate-in fade-in duration-150 space-y-3 shadow-2xl">
-            {/* Backend URL Config */}
-            <div className="max-w-[1920px] mx-auto flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 flex-1 min-w-[300px]">
-                <Server className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span className="font-semibold text-white">Backend API URL:</span>
+          <div className="bg-[#12121a] border-t border-white/[0.08] px-4 sm:px-6 py-3.5 text-xs text-zinc-300 animate-in fade-in duration-150 space-y-3 shadow-2xl">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              
+              {/* Voice Persona Dropdown */}
+              <div className="flex items-center gap-2 flex-1 min-w-[260px]">
+                <Volume2 className="w-4 h-4 text-violet-400 shrink-0" />
+                <span className="font-semibold text-zinc-200">Voice:</span>
+                <select
+                  value={selectedVoiceName}
+                  onChange={(e) => {
+                    setSelectedVoiceName(e.target.value);
+                    localStorage.setItem('voiceassist_preferred_voice', e.target.value);
+                  }}
+                  className="bg-[#09090e] border border-white/[0.08] rounded-xl px-2.5 py-1.5 text-xs text-violet-300 flex-1 focus:outline-none focus:border-violet-500 truncate"
+                >
+                  {availableVoices.length > 0 ? (
+                    availableVoices.map((v) => (
+                      <option key={v.name} value={v.name} className="bg-zinc-900 text-zinc-200">
+                        {v.name} ({v.lang})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" className="bg-zinc-900 text-zinc-200">Default Natural Voice</option>
+                  )}
+                </select>
+              </div>
+
+              {/* Speed & Tone Selectors */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 bg-[#09090e] px-2.5 py-1.5 rounded-xl border border-white/[0.08]">
+                  <span className="text-[11px] text-zinc-400">Speed:</span>
+                  <select
+                    value={speechRate}
+                    onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                    className="bg-transparent text-zinc-200 text-xs focus:outline-none cursor-pointer"
+                  >
+                    <option value="0.9" className="bg-zinc-900">0.9x Relaxed</option>
+                    <option value="1.0" className="bg-zinc-900">1.0x Normal</option>
+                    <option value="1.1" className="bg-zinc-900">1.1x Brisk</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-[#09090e] px-2.5 py-1.5 rounded-xl border border-white/[0.08]">
+                  <span className="text-[11px] text-zinc-400">Tone:</span>
+                  <select
+                    value={speechPitch}
+                    onChange={(e) => setSpeechPitch(parseFloat(e.target.value))}
+                    className="bg-transparent text-zinc-200 text-xs focus:outline-none cursor-pointer"
+                  >
+                    <option value="0.95" className="bg-zinc-900">Warm</option>
+                    <option value="1.0" className="bg-zinc-900">Balanced</option>
+                    <option value="1.1" className="bg-zinc-900">Bright</option>
+                  </select>
+                </div>
+
+                {/* Preview Voice */}
+                <button
+                  type="button"
+                  onClick={isPreviewSpeaking ? handleStopSpeak : handlePreviewVoice}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition text-xs shadow-sm ${
+                    isPreviewSpeaking 
+                      ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
+                      : 'bg-violet-600 hover:bg-violet-500 text-white'
+                  }`}
+                >
+                  {isPreviewSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                  <span>{isPreviewSpeaking ? 'Stop' : 'Test Voice'}</span>
+                </button>
+              </div>
+
+            </div>
+
+            {/* API Endpoint Configuration */}
+            <div className="max-w-7xl mx-auto pt-2.5 border-t border-white/[0.06] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+                <Server className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="font-semibold text-zinc-300">Backend API:</span>
                 <input
                   type="text"
                   value={backendUrl}
                   onChange={(e) => handleUrlChange(e.target.value)}
-                  placeholder="https://voiceassist-ai-backend.onrender.com or http://localhost:8000"
-                  className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-cyan-300 flex-1 font-mono focus:outline-none focus:border-cyan-500"
+                  placeholder="https://voiceassist-ai-backend.onrender.com"
+                  className="bg-[#09090e] border border-white/[0.08] rounded-xl px-2.5 py-1 text-xs text-emerald-300 flex-1 font-mono focus:outline-none focus:border-emerald-500"
                 />
               </div>
+
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
@@ -628,10 +709,9 @@ export default function App() {
                     handleUrlChange(renderUrl);
                     checkHealth(renderUrl);
                   }}
-                  className="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/50 rounded-lg text-xs transition"
-                  title="Use Permanent Render Cloud Backend"
+                  className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-white/10 rounded-lg text-xs transition"
                 >
-                  Render (24/7 Cloud)
+                  Render Cloud
                 </button>
                 <button
                   type="button"
@@ -639,94 +719,21 @@ export default function App() {
                     handleUrlChange('http://localhost:8000');
                     checkHealth('http://localhost:8000');
                   }}
-                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg text-xs transition"
-                  title="Switch to local development server"
+                  className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-white/10 rounded-lg text-xs transition"
                 >
                   Localhost:8000
                 </button>
                 <button
                   type="button"
                   onClick={() => checkHealth(backendUrl)}
-                  className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-semibold transition text-xs"
+                  className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold transition text-xs"
                 >
-                  Test Connection
+                  Ping Server
                 </button>
-              </div>
-            </div>
-
-            {/* Voice Persona & Speech Synthesis Config */}
-            <div className="max-w-[1920px] mx-auto pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 flex-1 min-w-[300px]">
-                <Volume2 className="w-4 h-4 text-indigo-400 shrink-0" />
-                <span className="font-semibold text-white">Voice Persona:</span>
-                <select
-                  value={selectedVoiceName}
-                  onChange={(e) => {
-                    setSelectedVoiceName(e.target.value);
-                    localStorage.setItem('voiceassist_preferred_voice', e.target.value);
-                  }}
-                  className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-indigo-300 flex-1 focus:outline-none focus:border-indigo-500 truncate"
-                >
-                  {availableVoices.length > 0 ? (
-                    availableVoices.map((v) => (
-                      <option key={v.name} value={v.name} className="bg-slate-900 text-slate-200">
-                        {v.name} ({v.lang})
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" className="bg-slate-900 text-slate-200">Default Natural Voice</option>
-                  )}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2 flex-wrap">
-                {/* Voice Speed */}
-                <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-                  <span className="text-[11px] text-slate-400">Speed:</span>
-                  <select
-                    value={speechRate}
-                    onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-                    className="bg-transparent text-slate-300 text-xs focus:outline-none cursor-pointer"
-                  >
-                    <option value="0.9" className="bg-slate-900 text-slate-200">0.9x (Relaxed)</option>
-                    <option value="1.0" className="bg-slate-900 text-slate-200">1.0x (Normal)</option>
-                    <option value="1.1" className="bg-slate-900 text-slate-200">1.1x (Brisk)</option>
-                  </select>
-                </div>
-
-                {/* Voice Pitch */}
-                <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-                  <span className="text-[11px] text-slate-400">Tone:</span>
-                  <select
-                    value={speechPitch}
-                    onChange={(e) => setSpeechPitch(parseFloat(e.target.value))}
-                    className="bg-transparent text-slate-300 text-xs focus:outline-none cursor-pointer"
-                  >
-                    <option value="0.95" className="bg-slate-900 text-slate-200">Warm / Deep</option>
-                    <option value="1.0" className="bg-slate-900 text-slate-200">Balanced</option>
-                    <option value="1.1" className="bg-slate-900 text-slate-200">Friendly / Bright</option>
-                  </select>
-                </div>
-
-                {/* Preview Button */}
-                <button
-                  type="button"
-                  onClick={isPreviewSpeaking ? handleStopSpeak : handlePreviewVoice}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-semibold transition text-xs ${
-                    isPreviewSpeaking 
-                      ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                  }`}
-                  title="Click to hear a sample of this voice"
-                >
-                  {isPreviewSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                  <span>{isPreviewSpeaking ? 'Stop' : 'Test Voice'}</span>
-                </button>
-
                 <button
                   type="button"
                   onClick={() => setShowConfig(false)}
-                  className="px-2.5 py-1 text-slate-400 hover:text-white transition"
+                  className="px-2.5 py-1 text-zinc-400 hover:text-white transition text-xs"
                 >
                   Close
                 </button>
@@ -736,200 +743,311 @@ export default function App() {
         )}
       </header>
 
-      {/* FULL-VIEWPORT DASHBOARD BODY */}
-      <div className="flex-1 flex overflow-hidden w-full max-w-[1920px] mx-auto">
+      {/* ============================================================ */}
+      {/* MAIN CONTAINER: Generous, Spacious & Aesthetic Chat Arena */}
+      {/* ============================================================ */}
+      <div className="flex-1 flex overflow-hidden w-full relative">
         
+        {/* Subtle Ambient Violet-Emerald Backdrop Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-violet-600/10 via-purple-600/5 to-transparent blur-3xl pointer-events-none" />
+
         {/* ============================================================ */}
-        {/* LEFT PANEL: DOMAIN EXPLORER & QUESTION BANK (Desktop) */}
+        {/* SLIDE-OUT LEFT DRAWER: TOPIC & PROMPT BANK */}
         {/* ============================================================ */}
-        <aside className="hidden lg:flex w-72 xl:w-80 flex-col border-r border-slate-800/80 bg-slate-900/30 backdrop-blur-sm overflow-hidden shrink-0">
-          <div className="p-3.5 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/60">
-            <div className="flex items-center gap-2">
-              <Compass className="w-4 h-4 text-cyan-400" />
-              <span className="font-bold text-xs text-white uppercase tracking-wider">Domain Question Bank</span>
-            </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-              20 Intents
-            </span>
-          </div>
-
-          {/* Scrollable Questions Library */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4 text-xs">
-            <p className="text-[11px] text-slate-400 px-1">
-              Click any question below to test the trained BiLSTM Deep Learning model immediately:
-            </p>
-
-            {DOMAIN_CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
-              return (
-                <div key={cat.id} className="space-y-1.5">
-                  <div className="flex items-center gap-1.5 px-1 py-1 font-semibold text-slate-300 text-xs">
-                    <Icon className={`w-3.5 h-3.5 ${cat.color}`} />
-                    <span>{cat.title}</span>
-                  </div>
-                  <div className="space-y-1">
-                    {cat.prompts.map((p, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSendMessage(p.query, false)}
-                        className="w-full text-left p-2 rounded-xl bg-slate-900/70 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-cyan-300 transition group flex items-start justify-between gap-2 shadow-sm"
-                        title={p.query}
-                      >
-                        <span className="text-[11px] line-clamp-1">{p.label}</span>
-                        <ChevronRight className="w-3 h-3 text-slate-500 group-hover:text-cyan-400 shrink-0 mt-0.5 transition group-hover:translate-x-0.5" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Left Footer: Session Analytics Widget */}
-          <div className="p-3 border-t border-slate-800/80 bg-slate-900/60 text-xs space-y-2">
-            <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span>Session Queries:</span>
-              <span className="font-mono font-bold text-white">{totalQueries}</span>
-            </div>
-            {avgConfidence && (
-              <div className="flex items-center justify-between text-[11px] text-slate-400">
-                <span>Avg Confidence:</span>
-                <span className="font-mono font-bold text-emerald-400">{avgConfidence}%</span>
+        {showExplorer && (
+          <aside className="fixed inset-y-0 left-0 top-[53px] z-40 w-80 sm:w-96 bg-[#0f0f17]/95 backdrop-blur-2xl border-r border-white/[0.08] shadow-2xl flex flex-col animate-in slide-in-from-left duration-200">
+            <div className="p-4 border-b border-white/[0.08] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-violet-400" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-white">Domain Question Bank</h3>
               </div>
-            )}
-            <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-800">
-              <span>Inference Engine:</span>
-              <span className="text-cyan-400 font-mono">BiLSTM (139k)</span>
+              <button 
+                onClick={() => setShowExplorer(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-          </div>
-        </aside>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+              <p className="text-[11px] text-zinc-400">
+                Click any topic below to query the BiLSTM neural network instantly:
+              </p>
+
+              {DOMAIN_CATEGORIES.map((cat) => {
+                const Icon = cat.icon;
+                return (
+                  <div key={cat.id} className="space-y-1.5">
+                    <div className="flex items-center gap-2 px-1 font-semibold text-zinc-300 text-xs">
+                      <Icon className={`w-3.5 h-3.5 ${cat.color}`} />
+                      <span>{cat.title}</span>
+                    </div>
+                    <div className="space-y-1">
+                      {cat.prompts.map((p, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            handleSendMessage(p.query, false);
+                            setShowExplorer(false);
+                          }}
+                          className="w-full text-left p-2.5 rounded-xl bg-zinc-900/70 hover:bg-zinc-800/90 border border-white/[0.05] hover:border-violet-500/30 text-zinc-300 hover:text-violet-200 transition group flex items-start justify-between gap-2 shadow-sm"
+                        >
+                          <span className="text-xs line-clamp-1">{p.label}</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-violet-400 shrink-0 mt-0.5 transition group-hover:translate-x-0.5" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </aside>
+        )}
 
         {/* ============================================================ */}
-        {/* CENTER PANEL: THE CHAT ARENA (Expansive & Aesthetic) */}
+        {/* SLIDE-OUT RIGHT DRAWER: LIVE NEURAL TELEMETRY */}
         {/* ============================================================ */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-950/70 relative">
-          
-          {/* Subtle Ambient Glow Aura */}
-          <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-cyan-900/10 via-indigo-950/5 to-transparent pointer-events-none" />
-
-          {/* Messages Feed Area */}
-          <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-            
-            {messages.length === 0 ? (
-              /* Enhanced Welcome Hero State */
-              <div className="h-full min-h-[420px] flex flex-col items-center justify-center text-center max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300 py-6">
-                
-                {/* Glowing AI Core Icon */}
-                <div className="relative">
-                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-500 opacity-40 blur-xl animate-pulse" />
-                  <div className="relative p-5 rounded-3xl bg-slate-900/90 border border-slate-800 text-cyan-400 shadow-2xl flex items-center justify-center">
-                    <Brain className="w-12 h-12" />
-                  </div>
-                </div>
-
-                {/* Main Hero Header */}
-                <div className="space-y-2">
-                  <h2 className="text-xl sm:text-3xl font-black text-white tracking-tight">
-                    VoiceAssist <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">AI</span>
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-                    Voice-Enabled Academic Conversational Agent developed for the Speech & Language Processing Lab.
-                    Featuring real-time <strong className="text-cyan-300">Speech-to-Text (ASR)</strong>, custom <strong className="text-indigo-300">BiLSTM Deep Learning Intent Classification</strong>, and auditory <strong className="text-purple-300">Text-to-Speech (TTS)</strong>.
-                  </p>
-                </div>
-
-                {/* 3 Core Architecture Pillars */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left">
-                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/30 transition shadow-lg">
-                    <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs">
-                      <Mic className="w-4 h-4" />
-                      <span>1. Speech Recognition</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                      Real-time client acoustic capture via browser Web Speech API with interim transcript streaming.
-                    </p>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/30 transition shadow-lg">
-                    <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs">
-                      <Brain className="w-4 h-4" />
-                      <span>2. BiLSTM Deep Learning</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                      Bidirectional LSTM with Global Max Pooling (139,092 parameters) predicts 20 intent classes.
-                    </p>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/30 transition shadow-lg">
-                    <div className="flex items-center gap-2 text-purple-400 font-bold text-xs">
-                      <Volume2 className="w-4 h-4" />
-                      <span>3. Voice Synthesis</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                      Customizable natural assistant voices vocalize responses with speed and tone adjustment.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Quick Evaluator Starters Grid */}
-                <div className="w-full space-y-2.5 pt-2">
-                  <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400 flex items-center justify-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Quick Test Starters (Click Any to Ask):</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                    {[
-                      { label: "What is deep learning?", query: "What is deep learning and how do neural networks work?" },
-                      { label: "How does ASR work?", query: "How does speech to text conversion work in ASR?" },
-                      { label: "Explain NLP & Tokenization", query: "Explain natural language processing and tokenization" },
-                      { label: "Tips for campus recruitment", query: "What should I study before campus recruitment and coding rounds?" },
-                      { label: "Semester exam advice", query: "How can I score higher marks in semester exams and vivas?" },
-                      { label: "Out-of-Domain fallback test", query: "What is the capital of France?" }
-                    ].map((item, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSendMessage(item.query, false)}
-                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-cyan-300 text-xs text-left transition flex items-center justify-between gap-2 group shadow-sm"
-                      >
-                        <span className="line-clamp-1 font-medium">{item.label}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400 shrink-0 transition group-hover:translate-x-0.5" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
+        {showTelemetry && (
+          <aside className="fixed inset-y-0 right-0 top-[53px] z-40 w-80 sm:w-96 bg-[#0f0f17]/95 backdrop-blur-2xl border-l border-white/[0.08] shadow-2xl flex flex-col p-4 space-y-4 animate-in slide-in-from-right duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-white">Live Neural Telemetry</h3>
               </div>
-            ) : (
-              /* Message Stream */
-              <div className="space-y-4 max-w-4xl mx-auto pb-4">
-                {messages.map((msg) => (
-                  <ChatMessage
-                    key={msg.id}
-                    message={msg}
-                    onSpeak={handleSpeak}
-                    speakingId={speakingId}
-                    onStopSpeak={handleStopSpeak}
-                  />
-                ))}
+              <button 
+                onClick={() => setShowTelemetry(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-                {/* Animated Inference Spinner */}
-                {isLoading && (
-                  <div className="flex items-center gap-3 text-slate-400 text-xs p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 w-fit animate-pulse shadow-lg">
-                    <Brain className="w-4 h-4 text-cyan-400 animate-spin" />
-                    <span>Bidirectional LSTM Neural Network is analyzing sequence intent...</span>
+            {latestPrediction ? (
+              <div className="space-y-4 overflow-y-auto text-xs">
+                {/* Intent & Confidence */}
+                <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-white/[0.06] space-y-2">
+                  <div className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Classified Intent:</div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-sm font-bold text-violet-300 bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-lg">
+                      #{latestPrediction.intent}
+                    </span>
+                    <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded-md border ${
+                      latestPrediction.confidence >= 0.70 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' :
+                      latestPrediction.confidence >= 0.50 ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' :
+                      'text-rose-400 bg-rose-500/10 border-rose-500/30'
+                    }`}>
+                      {(latestPrediction.confidence * 100).toFixed(1)}%
+                    </span>
+                  </div>
+
+                  {/* Bar */}
+                  <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden mt-2">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        latestPrediction.confidence >= 0.70 ? 'bg-emerald-400' :
+                        latestPrediction.confidence >= 0.50 ? 'bg-amber-400' : 'bg-rose-400'
+                      }`}
+                      style={{ width: `${Math.min(latestPrediction.confidence * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Softmax Candidates */}
+                {latestPrediction.topIntents && (
+                  <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-white/[0.06] space-y-2.5">
+                    <div className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Posterior Class Probabilities:</div>
+                    {latestPrediction.topIntents.slice(0, 4).map((item, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex items-center justify-between font-mono text-[11px] text-zinc-300">
+                          <span>#{item.intent}</span>
+                          <span className="text-violet-400 font-semibold">{(item.probability * 100).toFixed(1)}%</span>
+                        </div>
+                        <div className="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-violet-500 to-purple-400 rounded-full"
+                            style={{ width: `${Math.min(item.probability * 100, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
 
-                <div ref={messagesEndRef} />
+                {/* Query details */}
+                <div className="p-3 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-[11px] text-zinc-400 space-y-1">
+                  <div><strong className="text-zinc-300">Query:</strong> "{latestPrediction.query}"</div>
+                  <div><strong className="text-zinc-300">Inference Latency:</strong> ~{latestPrediction.latencyMs} ms</div>
+                </div>
+              </div>
+            ) : (
+              <div className="py-12 text-center text-zinc-500 space-y-2">
+                <Brain className="w-8 h-8 text-zinc-600 mx-auto animate-pulse" />
+                <p className="text-xs">Send a voice or text message to see live Softmax probabilities here.</p>
               </div>
             )}
 
+            <button
+              onClick={() => {
+                setShowTelemetry(false);
+                setIsModalOpen(true);
+              }}
+              className="mt-auto w-full py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs shadow-md transition"
+            >
+              View Full Model Architecture
+            </button>
+          </aside>
+        )}
+
+        {/* ============================================================ */}
+        {/* CENTER CHAT ARENA: Spacious, Wide & Aesthetic */}
+        {/* ============================================================ */}
+        <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10">
+          
+          {/* Scrollable Messages Stream */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="max-w-4xl mx-auto h-full flex flex-col">
+              
+              {messages.length === 0 ? (
+                /* Sleek, Aesthetic, Uncluttered Welcome Hero */
+                <div className="my-auto flex flex-col items-center justify-center text-center py-6 sm:py-10 space-y-6 animate-in fade-in duration-300">
+                  
+                  {/* Glowing AI Voice Orb */}
+                  <div className="relative">
+                    <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 opacity-40 blur-2xl animate-pulse" />
+                    <div className="relative p-5 sm:p-6 rounded-3xl bg-[#14141f] border border-white/10 text-violet-400 shadow-2xl flex items-center justify-center">
+                      <Brain className="w-10 h-10 sm:w-12 sm:h-12 text-violet-400" />
+                    </div>
+                  </div>
+
+                  {/* Main Title & Authorship */}
+                  <div className="space-y-2 max-w-xl">
+                    <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                      VoiceAssist <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">AI</span>
+                    </h2>
+
+                    {/* PROMINENT CREATOR CITATION */}
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/10 text-violet-300 border border-violet-500/25">
+                      <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+                      <span>Created by Rajat • Speech & Language Processing Lab</span>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed pt-1">
+                      Voice-enabled conversational agent powered by client-side Speech Recognition, custom BiLSTM deep learning intent classification, and vocal synthesis.
+                    </p>
+                  </div>
+
+                  {/* 3 Core Micro Badges */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                    <span className="px-3 py-1 rounded-xl bg-[#14141e] border border-white/[0.08] text-xs font-medium text-zinc-300 flex items-center gap-1.5">
+                      <Mic className="w-3.5 h-3.5 text-pink-400" />
+                      Web Speech ASR
+                    </span>
+                    <span className="px-3 py-1 rounded-xl bg-[#14141e] border border-white/[0.08] text-xs font-medium text-zinc-300 flex items-center gap-1.5">
+                      <Brain className="w-3.5 h-3.5 text-violet-400" />
+                      BiLSTM Neural Intent (139k params)
+                    </span>
+                    <span className="px-3 py-1 rounded-xl bg-[#14141e] border border-white/[0.08] text-xs font-medium text-zinc-300 flex items-center gap-1.5">
+                      <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                      Natural TTS Voice
+                    </span>
+                  </div>
+
+                  {/* Clean, Curated Prompt Starter Cards */}
+                  <div className="w-full max-w-2xl pt-4 space-y-2.5">
+                    <div className="text-[11px] uppercase tracking-wider font-bold text-zinc-500 flex items-center justify-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-violet-400" />
+                      <span>Try Asking or Speaking:</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left">
+                      {[
+                        { 
+                          title: "Deep Learning & Neural Nets", 
+                          query: "Can you explain how deep neural networks work?",
+                          icon: Brain,
+                          color: "text-violet-400"
+                        },
+                        { 
+                          title: "Speech Recognition (ASR)", 
+                          query: "How does speech to text conversion work in ASR?",
+                          icon: Mic,
+                          color: "text-pink-400"
+                        },
+                        { 
+                          title: "Campus Placements & Prep", 
+                          query: "What should I study before campus recruitment and coding rounds?",
+                          icon: CheckCircle2,
+                          color: "text-emerald-400"
+                        },
+                        { 
+                          title: "Semester Exam Advice", 
+                          query: "How can I score higher marks in semester exams and vivas?",
+                          icon: Sparkles,
+                          color: "text-amber-400"
+                        }
+                      ].map((card, idx) => {
+                        const CardIcon = card.icon;
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleSendMessage(card.query, false)}
+                            className="p-3.5 rounded-2xl bg-[#13131c]/80 hover:bg-[#191924] border border-white/[0.06] hover:border-violet-500/30 transition-all text-left flex items-center justify-between gap-3 group shadow-sm hover:shadow-violet-950/20"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div className="p-2 rounded-xl bg-zinc-800/80 border border-white/5">
+                                <CardIcon className={`w-4 h-4 ${card.color}`} />
+                              </div>
+                              <div>
+                                <div className="text-xs font-semibold text-zinc-200 group-hover:text-white transition">
+                                  {card.title}
+                                </div>
+                                <div className="text-[11px] text-zinc-500 line-clamp-1">
+                                  {card.query}
+                                </div>
+                              </div>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-violet-400 group-hover:translate-x-0.5 transition shrink-0" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </div>
+              ) : (
+                /* Active Message Stream */
+                <div className="space-y-3 pb-6 flex-1">
+                  {messages.map((msg) => (
+                    <ChatMessage
+                      key={msg.id}
+                      message={msg}
+                      onSpeak={handleSpeak}
+                      speakingId={speakingId}
+                      onStopSpeak={handleStopSpeak}
+                    />
+                  ))}
+
+                  {/* Realtime Inference Spinner */}
+                  {isLoading && (
+                    <div className="flex items-center gap-3 text-zinc-400 text-xs p-3.5 rounded-2xl bg-[#14141e] border border-white/[0.08] w-fit animate-pulse shadow-lg my-2">
+                      <Brain className="w-4 h-4 text-violet-400 animate-spin" />
+                      <span>BiLSTM Neural Network analyzing sequence intent...</span>
+                    </div>
+                  )}
+
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
+
+            </div>
           </div>
 
           {/* ============================================================ */}
-          {/* FLOATING INPUT DOCK SECTION */}
+          {/* FLOATING INPUT DOCK: Clean, Aesthetic & Spacious */}
           {/* ============================================================ */}
-          <div className="shrink-0 p-4 sm:p-5 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent space-y-3 z-10">
+          <div className="shrink-0 p-4 sm:p-5 bg-gradient-to-t from-[#09090e] via-[#09090e]/95 to-transparent space-y-2.5 z-20">
             
-            {/* Active Speech Recognition Visualizer */}
+            {/* Interim Voice Visualizer */}
             <div className="max-w-4xl mx-auto">
               <VoiceIndicator
                 isListening={isListening}
@@ -938,34 +1056,34 @@ export default function App() {
               />
             </div>
 
-            {/* Speech Error Banner */}
+            {/* Error Banner */}
             {speechError && (
-              <div className="max-w-4xl mx-auto p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between gap-3 animate-in fade-in duration-150">
+              <div className="max-w-4xl mx-auto p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between gap-3 animate-in fade-in">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
                   <span>{speechError}</span>
                 </div>
                 <button
                   onClick={() => setSpeechError(null)}
-                  className="text-slate-400 hover:text-white text-xs font-bold"
+                  className="text-zinc-400 hover:text-white text-xs font-bold"
                 >
                   ✕
                 </button>
               </div>
             )}
 
-            {/* Input Bar Card */}
-            <div className="max-w-4xl mx-auto p-2 sm:p-2.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-xl flex items-center gap-2.5">
+            {/* The Main Input Dock Pill */}
+            <div className="max-w-4xl mx-auto p-2 sm:p-2.5 rounded-2xl bg-[#12121b]/95 border border-white/[0.1] shadow-2xl backdrop-blur-2xl flex items-center gap-2.5 focus-within:border-violet-500/50 transition">
               
-              {/* Big Glowing Microphone Button */}
+              {/* Glowing Microphone Button */}
               <button
                 onClick={toggleListening}
                 className={`p-3 rounded-xl font-bold transition flex items-center justify-center shadow-lg relative shrink-0 ${
                   isListening
-                    ? 'bg-rose-600 hover:bg-rose-500 text-white glow-mic animate-pulse'
-                    : 'bg-gradient-to-tr from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white glow-cyan'
+                    ? 'bg-rose-600 hover:bg-rose-500 text-white glow-rose animate-pulse'
+                    : 'bg-gradient-to-tr from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white glow-violet'
                 }`}
-                title={isListening ? "Listening... Click to finish speaking" : "Click to Speak (Web Speech Recognition)"}
+                title={isListening ? "Listening... Click to stop" : "Click to Speak (Web Speech API)"}
               >
                 {isListening ? (
                   <>
@@ -988,16 +1106,16 @@ export default function App() {
                     handleSendMessage();
                   }
                 }}
-                placeholder={isListening ? "Listening to your voice..." : "Click mic to speak, or type your question here..."}
+                placeholder={isListening ? "Listening to your voice..." : "Ask any question or click the mic to speak..."}
                 disabled={isListening}
-                className="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition"
+                className="flex-1 bg-transparent px-2 sm:px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
               />
 
               {/* Send Button */}
               <button
                 onClick={() => handleSendMessage()}
                 disabled={!inputText.trim() || isLoading}
-                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 transition flex items-center justify-center shadow shrink-0"
+                className="p-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-30 disabled:hover:bg-violet-600 text-white transition flex items-center justify-center shadow shrink-0"
                 title="Send Message"
               >
                 <Send className="w-4 h-4" />
@@ -1005,14 +1123,18 @@ export default function App() {
 
             </div>
 
-            {/* Micro Caption */}
-            <div className="max-w-4xl mx-auto flex items-center justify-between text-[10px] text-slate-500 px-2">
-              <span>Speech Recognition via Web Speech API • Model: BiLSTM (139k params)</span>
+            {/* Bottom Authorship Micro-bar */}
+            <div className="max-w-4xl mx-auto flex items-center justify-between text-[11px] text-zinc-500 px-2 pt-0.5">
+              <span className="flex items-center gap-1">
+                <span>Created by <strong className="text-zinc-400 font-semibold">Rajat</strong></span>
+                <span>•</span>
+                <span>SLP Lab BiLSTM Pipeline</span>
+              </span>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="hover:text-cyan-400 underline transition"
+                className="hover:text-violet-300 underline transition"
               >
-                Inspect Model Curves & Metrics
+                Neural Architecture & Metrics
               </button>
             </div>
 
@@ -1020,322 +1142,10 @@ export default function App() {
 
         </main>
 
-        {/* ============================================================ */}
-        {/* RIGHT PANEL: LIVE TELEMETRY & VOICE STUDIO (Desktop) */}
-        {/* ============================================================ */}
-        <aside className="hidden xl:flex w-80 2xl:w-96 flex-col border-l border-slate-800/80 bg-slate-900/30 backdrop-blur-sm overflow-y-auto p-4 space-y-4 shrink-0 text-xs">
-          
-          {/* Card 1: Live Neural Network Telemetry */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
-              <div className="flex items-center gap-2 font-bold text-white uppercase tracking-wider text-xs">
-                <Activity className="w-4 h-4 text-cyan-400" />
-                <span>Live Neural Telemetry</span>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
-                Softmax
-              </span>
-            </div>
-
-            {latestPrediction ? (
-              <div className="space-y-3 animate-in fade-in duration-200">
-                {/* Predicted Intent */}
-                <div>
-                  <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Classified Intent:</div>
-                  <div className="mt-1 flex items-center justify-between">
-                    <span className="font-mono text-sm font-bold text-cyan-300 bg-cyan-950/80 border border-cyan-800/60 px-2.5 py-1 rounded-lg">
-                      #{latestPrediction.intent}
-                    </span>
-                    <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded border ${
-                      latestPrediction.confidence >= 0.70 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' :
-                      latestPrediction.confidence >= 0.50 ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' :
-                      'text-rose-400 bg-rose-500/10 border-rose-500/30'
-                    }`}>
-                      {(latestPrediction.confidence * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
-                    <span>Confidence Score</span>
-                    <span>Threshold: θ = 0.50</span>
-                  </div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        latestPrediction.confidence >= 0.70 ? 'bg-emerald-400' :
-                        latestPrediction.confidence >= 0.50 ? 'bg-amber-400' : 'bg-rose-400'
-                      }`}
-                      style={{ width: `${Math.min(latestPrediction.confidence * 100, 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Top Softmax Candidates Breakdown */}
-                {latestPrediction.topIntents && latestPrediction.topIntents.length > 0 && (
-                  <div className="space-y-1.5 pt-2 border-t border-slate-800">
-                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Top Posterior Candidates:</div>
-                    {latestPrediction.topIntents.slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="space-y-0.5">
-                        <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
-                          <span>{item.intent}</span>
-                          <span className="text-cyan-400 font-semibold">{(item.probability * 100).toFixed(1)}%</span>
-                        </div>
-                        <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-cyan-500 rounded-full transition-all duration-300"
-                            style={{ width: `${Math.min(item.probability * 100, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Latency info */}
-                {latestPrediction.latencyMs !== undefined && (
-                  <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1">
-                    <span>Roundtrip Inference:</span>
-                    <span className="font-mono text-slate-400">~{latestPrediction.latencyMs} ms</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="py-6 text-center text-slate-400 space-y-2">
-                <Brain className="w-8 h-8 text-slate-600 mx-auto animate-pulse" />
-                <p className="text-xs">Send a voice or text query to view live neural prediction metrics & Softmax distributions.</p>
-              </div>
-            )}
-          </div>
-
-          {/* Card 2: Voice Studio Widget */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
-              <div className="flex items-center gap-2 font-bold text-white uppercase tracking-wider text-xs">
-                <Volume2 className="w-4 h-4 text-indigo-400" />
-                <span>Voice Persona Studio</span>
-              </div>
-              <span className="text-[10px] text-slate-400">TTS Audio</span>
-            </div>
-
-            <div className="space-y-2.5">
-              <div>
-                <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
-                  Active Speaker Voice:
-                </label>
-                <select
-                  value={selectedVoiceName}
-                  onChange={(e) => {
-                    setSelectedVoiceName(e.target.value);
-                    localStorage.setItem('voiceassist_preferred_voice', e.target.value);
-                  }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-indigo-300 focus:outline-none focus:border-indigo-500"
-                >
-                  {availableVoices.length > 0 ? (
-                    availableVoices.map((v) => (
-                      <option key={v.name} value={v.name} className="bg-slate-900 text-slate-200">
-                        {v.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" className="bg-slate-900 text-slate-200">Default Natural Voice</option>
-                  )}
-                </select>
-              </div>
-
-              {/* Speed & Pitch Controls */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
-                    Speed:
-                  </label>
-                  <select
-                    value={speechRate}
-                    onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2 py-1 text-xs text-slate-300 focus:outline-none"
-                  >
-                    <option value="0.9" className="bg-slate-900">0.9x Relaxed</option>
-                    <option value="1.0" className="bg-slate-900">1.0x Normal</option>
-                    <option value="1.1" className="bg-slate-900">1.1x Brisk</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
-                    Tone:
-                  </label>
-                  <select
-                    value={speechPitch}
-                    onChange={(e) => setSpeechPitch(parseFloat(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2 py-1 text-xs text-slate-300 focus:outline-none"
-                  >
-                    <option value="0.95" className="bg-slate-900">Warm / Deep</option>
-                    <option value="1.0" className="bg-slate-900">Balanced</option>
-                    <option value="1.1" className="bg-slate-900">Bright</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Preview Button */}
-              <button
-                type="button"
-                onClick={isPreviewSpeaking ? handleStopSpeak : handlePreviewVoice}
-                className={`w-full py-2 rounded-xl font-semibold transition text-xs flex items-center justify-center gap-2 shadow ${
-                  isPreviewSpeaking 
-                    ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
-                    : 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                }`}
-              >
-                {isPreviewSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                <span>{isPreviewSpeaking ? 'Stop Audio' : 'Preview Voice Sample'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Card 3: Deep Learning Specs Card */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg space-y-2.5">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
-              <div className="flex items-center gap-2 font-bold text-white uppercase tracking-wider text-xs">
-                <Layers className="w-4 h-4 text-purple-400" />
-                <span>Model Specifications</span>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 text-[11px] text-slate-300">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">Architecture:</span>
-                <span className="font-semibold text-white">BiLSTM + GlobalPool</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">Trainable Parameters:</span>
-                <span className="font-mono font-bold text-cyan-400">139,092</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">Embedding Dim:</span>
-                <span className="font-mono">64 (Vocab: 1,372)</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">Held-Out Test Accuracy:</span>
-                <span className="font-mono font-bold text-emerald-400">72.0% (14.4x base)</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="w-full mt-2 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700 flex items-center justify-center gap-1.5"
-            >
-              <BarChart2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Inspect Confusion Matrix</span>
-            </button>
-          </div>
-
-        </aside>
-
       </div>
 
       {/* ============================================================ */}
-      {/* MOBILE POPUP: TOPICS & QUESTION BANK DRAWER */}
-      {/* ============================================================ */}
-      {showMobileExplorer && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-slate-950/80 backdrop-blur-sm lg:hidden animate-in fade-in">
-          <div className="bg-slate-900 border-t border-slate-800 rounded-t-3xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-cyan-400" />
-                <h3 className="font-bold text-white text-sm">SLP Domain Question Bank</h3>
-              </div>
-              <button 
-                onClick={() => setShowMobileExplorer(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4 overflow-y-auto space-y-4">
-              {DOMAIN_CATEGORIES.map((cat) => (
-                <div key={cat.id} className="space-y-1.5">
-                  <div className="font-bold text-xs text-slate-300">{cat.title}</div>
-                  <div className="space-y-1">
-                    {cat.prompts.map((p, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          handleSendMessage(p.query, false);
-                          setShowMobileExplorer(false);
-                        }}
-                        className="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs transition"
-                      >
-                        {p.query}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================ */}
-      {/* MOBILE POPUP: LIVE TELEMETRY DRAWER */}
-      {/* ============================================================ */}
-      {showMobileTelemetry && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-slate-950/80 backdrop-blur-sm xl:hidden animate-in fade-in">
-          <div className="bg-slate-900 border-t border-slate-800 rounded-t-3xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl p-4 space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-bold text-white text-sm">Live Neural Telemetry</h3>
-              </div>
-              <button 
-                onClick={() => setShowMobileTelemetry(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {latestPrediction ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-sm font-bold text-cyan-300 bg-cyan-950 border border-cyan-800 px-3 py-1 rounded-lg">
-                    #{latestPrediction.intent}
-                  </span>
-                  <span className="font-mono text-xs font-bold text-emerald-400">
-                    {(latestPrediction.confidence * 100).toFixed(1)}% Confidence
-                  </span>
-                </div>
-                {latestPrediction.topIntents && (
-                  <div className="space-y-1.5">
-                    {latestPrediction.topIntents.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-xs text-slate-300">
-                        <span>{item.intent}</span>
-                        <span className="font-mono text-cyan-400 font-semibold">{(item.probability * 100).toFixed(1)}%</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-center text-slate-400 text-xs py-4">No query processed yet in this session.</p>
-            )}
-
-            <button
-              onClick={() => {
-                setShowMobileTelemetry(false);
-                setIsModalOpen(true);
-              }}
-              className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs"
-            >
-              View Full Model Architecture & Confusion Matrix
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================ */}
-      {/* ACADEMIC MODEL INFO MODAL (Curves, Confusion Matrix, Layers) */}
+      {/* ACADEMIC MODEL INFO MODAL */}
       {/* ============================================================ */}
       <ModelInfoModal
         isOpen={isModalOpen}
